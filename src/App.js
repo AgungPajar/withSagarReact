@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import ClubDetail from './pages/ClubDetail';
+import Login from './pages/Login';
+import Attendance from './pages/AttendancePage';
+import AdminClub from './pages/AdminClubs';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/club/:clubId" element={<ClubDetail />} />
+        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/admin/clubs" element={<AdminClub />} />
+      </Routes>
+    </Router>
   );
 }
 
