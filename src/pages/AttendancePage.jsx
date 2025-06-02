@@ -1,164 +1,171 @@
-import React from 'react';
-import axios from 'axios';
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Button, Select } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Button,
+  Select,
+  MenuItem
+} from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import apiClient from '../utils/axiosConfig';
+import dayjs from 'dayjs';
 
-export default function Attendance() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+export default function AttendancePage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const clubId = searchParams.get('club') || 1;
+  const { clubId } = useParams();
+  const [club, setClub] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [tanggal, setTanggal] = useState(dayjs());
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  useEffect(() => {
+    const fetchClub = async () => {
+      try {
+        const response = await apiClient.get(`/clubs/${clubId}`);
+        setClub(response.data);
+      } catch {
+        alert('Gagal memuat data ekskul');
+      }
+    };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+    const fetchStudents = async () => {
+      try {
+        const res = await apiClient.get(`/clubs/${clubId}/students`);
+        setStudents(res.data.map(s => ({ ...s, status: 'hadir' })));
+      } catch {
+        alert('Gagal memuat daftar siswa');
+      }
+    };
 
-  const handleBack = () => {
-    navigate('/club');
+    if (clubId) {
+      fetchClub();
+      fetchStudents();
+    }
+  }, [clubId]);
+
+  const handleBack = () => navigate(-1);
+
+  const handleStatusChange = (id, status) => {
+    setStudents(prev => prev.map(s => (s.id === id ? { ...s, status } : s)));
   };
 
   const handleSubmit = async () => {
+    console.log('📤 Data dikirim ke /attendances:', {
+      data: students.map(s => ({
+        student_id: s.id,
+        club_id: clubId,
+        status: s.status,
+        date: tanggal.format('YYYY-MM-DD'),
+      }))
+    });
+
+
     try {
       const attendanceData = students.map(student => ({
         student_id: student.id,
-        club_id: parseInt(clubId),
-        status: student.status || 'hadir',
-        date: '2025-05-21',
-        club_id: 1 // bisa ambil dari params atau state
+        club_id: clubId,
+        status: student.status,
+        date: tanggal.format('YYYY-MM-DD'),
       }));
-  
-      const response = await axios.post('http://localhost:8000/api/attendances', attendanceData);
-  
-      console.log('Presensi berhasil dikirim:', response.data);
-  
-      // Redirect ke halaman Club
-      navigate('/club');
+
+      console.log('Data presensi dikirim:', { data: attendanceData });
+
+      await apiClient.post('/attendances', { data: attendanceData }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      alert('Presensi berhasil dikirim!');
+      navigate(`/club/${clubId}`);
     } catch (error) {
-      console.error('Error saat mengirim presensi:', error);
-      alert('Gagal mengirim presensi. Silakan coba lagi.');
+      console.error('Gagal mengirim presensi:', error);
+      alert('Gagal mengirim presensi');
     }
   };
 
-  const handleStatusChange = (id, status) => {
-    const updatedStudents = students.map(student =>
-      student.id === id ? { ...student, status } : student
-    );
-    setStudents(updatedStudents);
-  };
-
-  const [students, setStudents] = React.useState([
-    { id: 1, class: 'XI PPL 2', name: 'Agung Pajar' },
-  ]);
-
   return (
-    <div className="flex flex-col justify-between min-h-screen bg-white text-gray-800 p-6">
-      {/* navbar */}
+    <div className="min-h-screen bg-white text-gray-800 p-6">
       <AppBar
         position="static"
         color="inherit"
-        style={{
-          boxShadow: 'none',
-          border: '1px solid #97C1FF',
-          borderRadius: '50px',
-        }}
-        className="bg-white">
+        style={{ boxShadow: 'none', borderRadius: 50, border: '1px solid #97C1FF' }}
+      >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleBack}>
+          <IconButton edge="start" color="inherit" onClick={handleBack}>
             <ArrowBackIosNewIcon />
           </IconButton>
-          <Typography variant="h6" component="div">
-            Presensi
-          </Typography>
-          <div></div>
+          <Typography variant="h6">Presensi Siswa</Typography>
+          <div />
         </Toolbar>
       </AppBar>
 
-      {/* Bagian Utama */}
-      <Paper 
-        elevation={3} 
-        className="bg-white p-4 rounded-lg shadow-md mb-6 mt-10 border border-blue-500 max-w-md mx-auto" 
-        style={{ width: '85vw' }}
+      <Paper
+        elevation={3}
+        sx={{ p: 4, mt: 6, maxWidth: 480, mx: 'auto', border: '1px solid #3b82f6', borderRadius: 3 }}
       >
-        <img 
-          src="/smealogo.png" 
-          alt="Logo" 
-          className="w-40 h-40 object-contain mb-4 mx-auto"
+        <img
+          src={
+            club?.logo_path
+              ? `http://localhost:8000/storage/${club.logo_path}`
+              : '/logoeks.png'
+          }
+          alt="Logo"
+          style={{ width: 160, height: 160, margin: 'auto', display: 'block', marginBottom: 16 }}
         />
 
-        <Typography variant="body1" component="div" sx={{ mb: 2, textAlign: 'center' }} >
-          Nama Ekstrakurikuler
+        <Typography variant="body1" align="center" sx={{ mb: 2 }}>
+          {club ? club.name : 'Memuat...'}
         </Typography>
 
-        <div className="flex justify-evenly">
-          <Button variant="contained" color="primary">15:10</Button>
-          <span>--</span>
-          <Button variant="contained" color="primary">17:00</Button>
-        </div>
-      </Paper>
-
-      <div className="mt-6 mb-5 max-w-md">
-        <p className="mb-2">Rabu, 21 Mei 2025</p>
-        <Button variant="contained" color="primary">TAKE PHOTO</Button>
-        <span className="ml-2">SUCCESS</span>
-      </div>
-
-      {/* Form Presensi */}
-      <div className="mt-1 ">
-        <TextField sx={{ mb: 1 }} label="Materi Kegiatan" fullWidth />
-        <TextField label="Tempat" fullWidth />
-      </div>
-
-      {/* Tabel Siswa */}
-      <TableContainer component={Paper} className="mt-5 mb-5">
-        <Table>
-          <TableHead>
-            <TableRow>
+        <TableContainer component={Paper} sx={{ maxHeight: 350 }}>
+          <Table stickyHeader size="small">
+            <TableHead>
+              <TableRow>
                 <TableCell>No</TableCell>
                 <TableCell>Kelas</TableCell>
                 <TableCell>Nama</TableCell>
-                <TableCell>Aksi</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {students.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.id}</TableCell>
-                <TableCell>{student.class}</TableCell>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>
-                  <Select 
-                    // defaultValue="hadir"
-                    value={student.status || 'hadir'}
-                    onChange={(e) => handleStatusChange(student.id, e.target.value)}
-                    fullWidth
-                  >
-                    <MenuItem value="hadir">Hadir</MenuItem>
-                    <MenuItem value="tidak hadir">Tidak Hadir</MenuItem>
-                  </Select>
-                </TableCell>
+                <TableCell>Status</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {students.map((student, i) => (
+                <TableRow key={student.id}>
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell>{student.class}</TableCell>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>
+                    <Select
+                      value={student.status}
+                      onChange={e => handleStatusChange(student.id, e.target.value)}
+                      fullWidth
+                      size="small"
+                    >
+                      <MenuItem value="hadir">Hadir</MenuItem>
+                      <MenuItem value="tidak hadir">Tidak Hadir</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      {/* Submit */}
-      <div className="mb-10">
-        <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
-          Button
+        <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleSubmit}>
+          Kirim Presensi
         </Button>
-      </div>
+      </Paper>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 w-full text-center py-3 text-sm text-black bg-gray-50" >
+      <footer style={{ marginTop: 32, textAlign: 'center', fontSize: 12, color: '#555' }}>
         © 2025 OSIS SMK NEGERI 1 GARUT
       </footer>
     </div>
-  )
+  );
 }

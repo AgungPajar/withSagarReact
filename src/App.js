@@ -3,8 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ClubDetail from './pages/ClubDetail';
 import Login from './pages/Login';
-import Attendance from './pages/AttendancePage';
-import AdminClub from './pages/AdminClubs';
+import ReportPage from './pages/ReportPage';
+import AttendancePage from './pages/AttendancePage';
+import MemberList from './pages/MemberList';
+import EditProfile from './pages/EditProfile';
+import RekapPage from './pages/Rekapitulasi';
+import AddMemberPage from './pages/AddMemberPage';
+import RegisterSiswaPage from './pages/RegisterPage';
+
+import AdminDashboard from './pages/admin/DashboardAdmin';
+import AdminClubs from './pages/admin/ClubsAdminPage';
+import EditClubs from './pages/admin/EditClubPage';
+
 
 function App() {
   return (
@@ -13,8 +23,18 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/club/:clubId" element={<ClubDetail />} />
-        <Route path="/attendance" element={<Attendance />} />
-        <Route path="/admin/clubs" element={<AdminClub />} />
+        <Route path="/club/:clubId/members" element={<MemberList />} />
+        <Route path="/club/:clubId/rekap" element={<RekapPage />} />
+        <Route path="/attendance/:clubId/report" element={<ReportPage />} />
+        <Route path="/attendance/:clubId/attendance" element={<AttendancePage />} />
+        <Route path="/club/:clubId/members/add" element={<AddMemberPage />} />
+        <Route path="/profile/edit/:clubId" element={<EditProfile />} />
+
+        <Route path="/register-siswa" element={<RegisterSiswaPage />} />
+
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/clubs" element={<AdminClubs />} />
+        <Route path="/admin/clubs/:clubId/edit" element={<EditClubs />} />
       </Routes>
     </Router>
   );

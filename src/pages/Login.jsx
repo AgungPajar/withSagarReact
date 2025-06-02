@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Hashids from 'hashids';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -7,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const hashids = new Hashids('smeagarut2025', 8);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Mencegah reload halaman
@@ -25,9 +27,10 @@ export default function Login() {
 
       // Redirect sesuai role
       if (res.data.user.role === 'osis') {
-        navigate('/admin/clubs');
+        navigate('/admin/dashboard');
       } else if (res.data.user.role === 'club_pengurus' && res.data.user.club_id) {
-        navigate(`/club/${res.data.user.club_id}`);
+        const hashedId = hashids.encode(res.data.user.club_id);
+        navigate(`/club/${hashedId}`);
       } else {
         alert('User tidak memiliki ekskul yang valid');
       }
