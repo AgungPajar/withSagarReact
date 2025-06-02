@@ -41,7 +41,7 @@ export default function ClubDetail() {
   }, [clubId]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white text-gray-800 p-6 pt-10">
+    <div className="flex flex-col items-center min-h-screen bg-white text-gray-800 p-4 pt-5">
       {/* Navbar */}
       <AppBar
         position="static"
@@ -63,7 +63,7 @@ export default function ClubDetail() {
         </Toolbar>
       </AppBar>
 
-      <div style={{ marginTop: '20%', gap: '16vh' }} className="flex flex-col items-center justify-center w-full max-w-md">
+      <div style={{ marginTop: '8vh', gap: '12vh' }} className="flex flex-col items-center justify-center w-full max-w-md">
         {/* Menu Hamburger */}
         <Menu open={Boolean(anchorEl)} onClose={handleMenuClose} anchorEl={anchorEl} >
           <MenuItem onClick={() => navigate('/Dashboard')}>Home</MenuItem>
@@ -101,7 +101,7 @@ export default function ClubDetail() {
       </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-0 w-full text-center py-3 text-sm text-gray-500 border-t border-gray-200 bg-gray-50">
+      <footer className="fixed bottom-0 w-full text-center py-3 text-sm text-gray-500 border-t border-gray-200 bg-gray-50">
         © 2025 OSIS SMK NEGERI 1 GARUT
       </footer>
     </div>

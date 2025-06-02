@@ -17,7 +17,7 @@ import {
   MenuItem
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import apiClient from '../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
 import dayjs from 'dayjs';
 
 export default function AttendancePage() {
@@ -114,7 +114,7 @@ export default function AttendancePage() {
         <img
           src={
             club?.logo_path
-              ? `http://localhost:8000/storage/${club.logo_path}`
+              ? `${STORAGE_URL}/${club.logo_path}`
               : '/logoeks.png'
           }
           alt="Logo"

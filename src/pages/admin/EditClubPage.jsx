@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Paper } from '@mui/material';
-import apiClient from '../../utils/axiosConfig';
-import { IconButton, InputAdornment } from '@mui/material';
+import { AppBar,Toolbar, IconButton,InputAdornment, TextField, Button, Typography, Paper } from '@mui/material';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -11,6 +11,8 @@ export default function EditClubPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleBack = () => navigate(-1);
+  
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -36,7 +38,7 @@ export default function EditClubPage() {
           logo: null,
         }));
         if (res.data.logo_path) {
-          setLogoPreview(`http://localhost:8000/storage/${res.data.logo_path}`);
+          setLogoPreview(`${STORAGE_URL}/${res.data.logo_path}`);
         }
       } catch (err) {
         alert('Gagal memuat data ekskul');
@@ -86,9 +88,29 @@ export default function EditClubPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <Typography variant="h5" className="mb-4">Edit Ekstrakurikuler</Typography>
+      {/* Navbar */}
+      <AppBar
+        position="static"
+        color="inherit"
+        style={{
+          boxShadow: 'none',
+          border: '1px solid #97C1FF',
+          borderRadius: '50px',
+        }}
+        className="bg-white"
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <IconButton edge="start" color="inherit" onClick={handleBack}>
+            <ArrowBackIosNewIcon />
+          </IconButton>
+          <Typography variant="body1" component="div">
+            Edit Ekstrakurikuler
+          </Typography>
+          <div></div>
+        </Toolbar>
+      </AppBar>
 
-      <Paper className="p-6 space-y-4">
+      <Paper className="p-6 space-y-4 mt-5">
 
         <TextField
           fullWidth

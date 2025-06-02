@@ -23,7 +23,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white text-gray-800 p-6 pt-10">
+    <div className="flex flex-col items-center min-h-screen bg-white text-gray-800 p-4 pt-5">
       {/* Navbar */}
       <AppBar
         position="static"
@@ -45,7 +45,7 @@ export default function Dashboard() {
         </Toolbar>
       </AppBar>
 
-      <div style={{ marginTop: '10vh', gap: '16vh' }} className="flex flex-col items-center justify-center w-full max-w-md">
+      <div style={{ marginTop: '8vh', gap: '12vh' }} className="flex flex-col items-center justify-center w-full max-w-md">
         {/* Menu Hamburger */}
         <Menu open={Boolean(anchorEl)} onClose={handleMenuClose} anchorEl={anchorEl}>
           <MenuItem onClick={() => navigate('/')}>Home</MenuItem>

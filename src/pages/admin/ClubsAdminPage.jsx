@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
 import SidebarAdmin from '../../components/SidebarAdmin';
 
 export default function ClubsAdminPage() {
@@ -73,7 +73,7 @@ export default function ClubsAdminPage() {
                 <img
                   src={
                     club.logo_path
-                      ? `http://localhost:8000/storage/${club.logo_path}`
+                      ? `${STORAGE_URL}/${club.logo_path}`
                       : '/logoeks.png'
                   }
                   alt={club.name}

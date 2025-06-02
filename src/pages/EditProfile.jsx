@@ -10,7 +10,7 @@ import {
   Paper,
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import apiClient from '../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditProfile() {
@@ -42,9 +42,9 @@ export default function EditProfile() {
 
       // Set preview logo jika belum upload baru
       if (!logo && data.logo_path) {
-        setLogoPreview(`http://localhost:8000/storage/${data.logo_path}`);
+        setLogoPreview(`${STORAGE_URL}/${data.logo_path}`);
       } else if (!logo) {
-        setLogoPreview('/logoeks.png'); // fallback
+        setLogoPreview('/logoeks.png');
       }
     } catch (err) {
       console.error('Gagal memuat data klub', err);
