@@ -42,7 +42,7 @@ export default function EditProfile() {
 
       // Set preview logo jika belum upload baru
       if (!logo && data.logo_path) {
-        setLogoPreview(`${STORAGE_URL}/${data.logo_path}`);
+        setLogoPreview(`${data.logo_path}`);
       } else if (!logo) {
         setLogoPreview('/logoeks.png');
       }

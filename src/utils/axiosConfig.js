@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-export const API_BASE_URL = 'https://withsagarapi-production.up.railway.app'; // Ganti dengan base URL Railway kalau production
+export const API_BASE_URL = 'http://localhost:8000'; // Ganti dengan base URL Railway kalau production
 export const STORAGE_URL = `${API_BASE_URL}/storage`;
 
 const apiClient = axios.create({

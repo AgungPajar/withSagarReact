@@ -14,7 +14,7 @@ export default function Login() {
     e.preventDefault(); // Mencegah reload halaman
 
     try {
-      const res = await axios.post('https://withsagarapi-production.up.railway.app/api/login', {
+      const res = await axios.post('http://localhost:8000/api/login', {
         username,
         password,
       });
