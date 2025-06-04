@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Hashids from 'hashids';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../utils/axiosConfig';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ export default function Login() {
     e.preventDefault(); // Mencegah reload halaman
 
     try {
-      const res = await axios.post('http://localhost:8000/api/login', {
+      const res = await apiClient.post('/login', {
         username,
         password,
       });
