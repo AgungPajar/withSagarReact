@@ -170,7 +170,8 @@ export default function RekapitulasiPage() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{item.student?.name}</TableCell>
                   <TableCell>{item.student?.class}</TableCell>
-                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{item.status}</TableCell> 
+                  {/* Jika Hadir berwarna hijau jika tidak berwarna merah */}
                 </TableRow>
               ))
             )}

@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import Hashids from 'hashids';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../utils/axiosConfig';
+import apiClient, { getCsrfToken } from '../utils/axiosConfig';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const hashids = new Hashids('smeagarut2025', 8);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Mencegah reload halaman
 
     try {
+      // Get CSRF cookie first
+      await getCsrfToken();
+
       const res = await apiClient.post('/login', {
         username,
         password,
@@ -29,9 +29,8 @@ export default function Login() {
       // Redirect sesuai role
       if (res.data.user.role === 'osis') {
         navigate('/admin/dashboard');
-      } else if (res.data.user.role === 'club_pengurus' && res.data.user.club_id) {
-        const hashedId = hashids.encode(res.data.user.club_id);
-        navigate(`/club/${hashedId}`);
+      } else if (res.data.user.role === 'club_pengurus' && res.data.user.club_hash_id) {
+         navigate(`/club/${res.data.user.club_hash_id}`);
       } else {
         alert('User tidak memiliki ekskul yang valid');
       }

@@ -14,11 +14,12 @@ export default function SidebarAdmin() {
   const menuItems = [
     { label: 'Dashboard', to: '/admin/dashboard' },
     { label: 'Eksrakurikuler', to: '/admin/clubs' },
-    { label: 'Anggota', to: '/' },
-    { label: 'Presensi', to: '/' },
-    { label: 'Rekap%Report', to: '/' },
-    { label: 'RoleUser', to: '/' },
-    { label: 'Pengaturan', to: '/' },
+    { label: 'Data Pores', to: '/admin/pores' },
+    // { label: 'Anggota', to: '/' },
+    // { label: 'Presensi', to: '/' },
+    // { label: 'Rekap%Report', to: '/' },
+    // { label: 'RoleUser', to: '/' },
+    // { label: 'Pengaturan', to: '/' },
     { label: 'Logout', onClick: handleLogout, danger: true },
   ];
 

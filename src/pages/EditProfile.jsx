@@ -10,7 +10,7 @@ import {
   Paper,
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
+import apiClient, { STORAGE_URL, getCsrfToken } from '../utils/axiosConfig';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditProfile() {
@@ -29,9 +29,10 @@ export default function EditProfile() {
       fetchClub(clubId);
     }
   }, [clubId]);
-
   const fetchClub = async (hashId) => {
     try {
+      // Get CSRF token before fetching club data
+      await getCsrfToken();
       const res = await apiClient.get(`/clubs/${hashId}`);
       const data = res.data;
 
@@ -62,30 +63,47 @@ export default function EditProfile() {
   };
 
   const handleSubmit = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('name', name);
-      formData.append('description', description);
-      if (password) formData.append('password', password);
-      if (logo) formData.append('logo', logo);
+  try {
+    await getCsrfToken();
 
-      await apiClient.post('/profile/update', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+    const token = localStorage.getItem('access_token');
 
-      alert('Profil berhasil diperbarui');
-      fetchClub(clubId); // ambil ulang data setelah update (tanpa reload)
-    } catch (err) {
-      console.error('Gagal update profil:', err);
-      if (err.response) {
-        console.error('Respon:', err.response.data);
-        alert(`Gagal memperbarui profil: ${err.response.data.message || 'Terjadi kesalahan'}`);
-      } else {
-        alert('Gagal memperbarui profil: Tidak ada respon dari server');
-      }
+    const xsrfToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1];
+
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('name', name);
+    formData.append('description', description);
+    if (password) formData.append('password', password);
+    if (logo) formData.append('logo', logo);
+
+    await apiClient.post('/profile/update', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Accept': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }), // 🔥 ini yang penting!
+      },
+      withCredentials: true,
+    });
+
+    alert('Profil berhasil diperbarui');
+    fetchClub(clubId);
+  } catch (err) {
+    console.error('Gagal update profil:', err);
+    if (err.response) {
+      console.error('Respon:', err.response.data);
+      alert(`Gagal memperbarui profil: ${err.response.data.message || 'Terjadi kesalahan'}`);
+    } else {
+      alert('Gagal memperbarui profil: Tidak ada respon dari server');
     }
-  };
+  }
+};
+
+
 
   return (
     <div className="flex flex-col items-center justify-between min-h-screen bg-white text-gray-800 p-6">

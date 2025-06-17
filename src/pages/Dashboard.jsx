@@ -48,9 +48,10 @@ export default function Dashboard() {
       <div style={{ marginTop: '8vh', gap: '12vh' }} className="flex flex-col items-center justify-center w-full max-w-md">
         {/* Menu Hamburger */}
         <Menu open={Boolean(anchorEl)} onClose={handleMenuClose} anchorEl={anchorEl}>
-          <MenuItem onClick={() => navigate('/')}>Home</MenuItem>
+          <MenuItem onClick={() => navigate('/')} disabled>Home</MenuItem>
           <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
-          <MenuItem onClick={() => navigate('/register-siswa')}>Daftar Ekstrakurikuler</MenuItem>
+          <MenuItem onClick={() => navigate('/register-siswa')} disabled>Daftar Ekstrakurikuler</MenuItem>
+          <MenuItem onClick={() => navigate('/porest')}>Daftar Porest ClassMeet</MenuItem>
         </Menu>
 
         {/* Bagian Utama */}
