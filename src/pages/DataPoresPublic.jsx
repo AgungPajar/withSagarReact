@@ -41,6 +41,7 @@ const DataPores = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
         minHeight: '100vh',
         width: '100%',
         paddingTop: '80px',

@@ -22,7 +22,6 @@ const AdminPores = () => {
       try {
         await apiClient.delete(`/pendaftaran/${id}`);
         fetchData();
-        alert('Pendaftar berhasil dihapus!');
       } catch (error) {
         console.error("Gagal menghapus", error);
         alert("Gagal Menghapus Data.");

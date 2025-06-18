@@ -167,7 +167,7 @@ const PorestForm = () => {
           onChange={handleChange}
           fullWidth
           sx={{ mb: 2 }}
-          placeholder="Contoh : 0831......"
+          placeholder="Contoh : 08123456789"
         />
 
         <FormControl fullWidth sx={{ mb: 2 }}
@@ -188,13 +188,13 @@ const PorestForm = () => {
         </FormControl>
 
         <TextField
-          label="Nama Tim ( bagi Lomba Ber Tim)"
+          label="Nama Tim ( Bagi Lomba Futsal dan Tarik Tambang )"
           name="nama_tim"
           value={form.nama_tim}
           onChange={handleChange}
           fullWidth
           sx={{ mb: 5 }}
-          placeholder="Tidak Berunsur SARA,"
+          placeholder="Nama Tidak Berunsur SARA"
         />
 
         <Button
