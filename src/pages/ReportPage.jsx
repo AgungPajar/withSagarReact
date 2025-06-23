@@ -6,7 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import apiClient from '../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
 
 export default function ReportPage() {
   const navigate = useNavigate();
@@ -89,11 +89,11 @@ export default function ReportPage() {
         <img
           src={
             club?.logo_path
-              ? `http://localhost:8000/storage/${club.logo_path}`
+              ? `${STORAGE_URL}/${club.logo_path}`
               : '/logoeks.png'
           }
           alt="Logo"
-          style={{ width: 160, height: 160, margin: 'auto', display: 'block', marginBottom: 16 }}
+          style={{ width: 160, height: 160, margin: 'auto', display: 'block', marginBottom: 16, borderRadius: '50%', objectFit: 'cover', border: '3px solid #ccc' }}
         />
         <Typography variant="body1" align="center" sx={{ mb: 2 }}>
           {club ? club.name : 'Memuat...'}
@@ -103,11 +103,21 @@ export default function ReportPage() {
           <DatePicker
             label="Tanggal Kegiatan"
             value={tanggal}
-            onChange={setTanggal}
+            onChange={() => { }} // blok perubahan
             format="YYYY-MM-DD"
-            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+            readOnly
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: 'dense',
+                InputProps: {
+                  readOnly: true
+                }
+              }
+            }}
           />
         </LocalizationProvider>
+
 
         <div style={{ marginTop: 16 }}>
           <Button variant="contained" component="label" fullWidth sx={{ mb: 2 }}>

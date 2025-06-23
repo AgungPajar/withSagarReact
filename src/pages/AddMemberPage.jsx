@@ -29,6 +29,7 @@ export default function AddMemberPage() {
   const navigate = useNavigate();
   const [nisn, setNisn] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [kelas, setKelas] = useState('');
 
   const handleBack = () => navigate(-1);
@@ -39,6 +40,7 @@ export default function AddMemberPage() {
         nisn,
         name,
         class: kelas,
+        phone,
       });
       alert('Anggota berhasil ditambahkan!');
       navigate(`/club/${clubId}/members`);
@@ -95,6 +97,14 @@ export default function AddMemberPage() {
           />
 
           <TextField
+            label="Nomo Wa/Telephone"
+            variant="outlined"
+            fullWidth
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+
+          <TextField
             select
             label="Kelas"
             variant="outlined"
@@ -108,6 +118,7 @@ export default function AddMemberPage() {
               </MenuItem>
             ))}
           </TextField>
+          
 
           <Button
             variant="contained"

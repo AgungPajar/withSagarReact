@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import 'swiper/css/effect-coverflow';
-import { Pagination, Autoplay, EffectCoverflow } from 'swiper/modules';
+import { Autoplay, Navigation, EffectCoverflow } from 'swiper/modules';
 import apiClient from '../utils/axiosConfig';
 import { motion } from 'framer-motion';
+import '../css/EkskulSliderHome.css';
 
 const EkstrakurikulerSlider = () => {
   const [clubs, setClubs] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef(null);
 
   useEffect(() => {
@@ -26,47 +26,62 @@ const EkstrakurikulerSlider = () => {
 
   return (
     <div className="bg-blue-100 py-10 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
-      <div className="max-w-4xl mx-auto px-4 pt-7 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 pt-7 sm:px-6 lg:px-8 relative">
+        {/* Navigasi Panah */}
+        <button
+          onClick={() => swiperRef.current?.slidePrev()}
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-200"
+        >
+          ◀
+        </button>
+        <button
+          onClick={() => swiperRef.current?.slideNext()}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-white shadow rounded-full hover:bg-gray-200"
+        >
+          ▶
+        </button>
+
         <Swiper
           effect="coverflow"
           coverflowEffect={{
-            rotate: 50,
+            rotate: 30,
             stretch: 0,
             depth: 100,
             modifier: 1,
             slideShadows: false,
           }}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
-          onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-          slidesPerView="auto"
+          slidesPerView={1}
           spaceBetween={25}
           centeredSlides={true}
-          pagination={{ clickable: true, el: '.swiper-pagination' }}
+          pagination={false}
+          navigation={false}
           breakpoints={{
             640: { slidesPerView: 2 },
             768: { slidesPerView: 3 },
-            1024: { slidesPerView: 3 }, // fix 3 biar benar-benar tengah
+            1024: { slidesPerView: 4 },
+            1280: { slidesPerView: 5 },
           }}
           autoplay={{
-            delay: 3000,
+            delay: 2000,
             disableOnInteraction: false,
           }}
-          modules={[Pagination, Autoplay, EffectCoverflow]}
-          className="!overflow-visible"
+          modules={[Autoplay, Navigation, EffectCoverflow]}
+          className="!overflow-visible overflow-x-hidden"
         >
-          {clubs.map((club, index) => (
-            <SwiperSlide key={club.hash_id} className="flex justify-center">
+          {clubs.map((club) => (
+            <SwiperSlide key={club.hash_id} className="flex justify-center px-4 sm:px-0">
               {({ isActive }) => (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{
                     opacity: 1,
                     y: 0,
-                    scale: isActive ? 1.1 : 0.80,
-                    opacity: isActive ? 1 : 0.6,
+                    scale: isActive ? 1.05 : 0.9,
+                    opacity: isActive ? 1 : 0.5,
                   }}
                   transition={{ duration: 0.4 }}
-                  className="bg-white rounded-2xl border shadow p-6 text-center"
+                  className="bg-white rounded-2xl border shadow p-6 text-center w-full max-w-xs"
                 >
                   <div className="bg-gray-200 aspect-square flex items-center justify-center mb-4 rounded-lg overflow-hidden p-4 max-h-32 mx-auto">
                     {club.logo_path ? (
@@ -89,8 +104,6 @@ const EkstrakurikulerSlider = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-
-        <div className="swiper-pagination mt-11 !relative z-10 pt-10" />
       </div>
     </div>
   );

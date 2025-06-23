@@ -43,12 +43,12 @@ export default function EditProfile() {
 
       // Set preview logo jika belum upload baru
       if (!logo && data.logo_path) {
-        setLogoPreview(`${data.logo_path}`);
+        setLogoPreview(`${STORAGE_URL}/${data.logo_path}?v=${new Date().getTime()}`);
       } else if (!logo) {
         setLogoPreview('/logoeks.png');
       }
     } catch (err) {
-      console.error('Gagal memuat data klub', err);
+      console.error('Gagal memuat d ata klub', err);
     }
   };
 
@@ -58,50 +58,52 @@ export default function EditProfile() {
     const file = e.target.files[0];
     if (file) {
       setLogo(file);
-      setLogoPreview(URL.createObjectURL(file)); // preview lokal
+      setLogoPreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async () => {
-  try {
-    await getCsrfToken();
+    try {
+      await getCsrfToken();
 
-    const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('access_token');
 
-    const xsrfToken = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('XSRF-TOKEN='))
-      ?.split('=')[1];
+      const xsrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
 
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('name', name);
-    formData.append('description', description);
-    if (password) formData.append('password', password);
-    if (logo) formData.append('logo', logo);
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('name', name);
+      formData.append('description', description);
+      if (password) formData.append('password', password);
+      if (logo) formData.append('logo', logo);
 
-    await apiClient.post('/profile/update', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Accept': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }), // 🔥 ini yang penting!
-      },
-      withCredentials: true,
-    });
+      await apiClient.post('/profile/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+          ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }), // 🔥 ini yang penting!
+        },
+        withCredentials: true,
+      });
 
-    alert('Profil berhasil diperbarui');
-    fetchClub(clubId);
-  } catch (err) {
-    console.error('Gagal update profil:', err);
-    if (err.response) {
-      console.error('Respon:', err.response.data);
-      alert(`Gagal memperbarui profil: ${err.response.data.message || 'Terjadi kesalahan'}`);
-    } else {
-      alert('Gagal memperbarui profil: Tidak ada respon dari server');
+      alert('Profil berhasil diperbarui');
+      setLogo(null); // reset logo
+      setLogoPreview(null); // reset preview
+      fetchClub(clubId); // reload data dari backend
+    } catch (err) {
+      console.error('Gagal update profil:', err);
+      if (err.response) {
+        console.error('Respon:', err.response.data);
+        alert(`Gagal memperbarui profil: ${err.response.data.message || 'Terjadi kesalahan'}`);
+      } else {
+        alert('Gagal memperbarui profil: Tidak ada respon dari server');
+      }
     }
-  }
-};
+  };
 
 
 

@@ -1,0 +1,25 @@
+.swiper-pagination {
+  display: flex;
+  justify-content: center;
+  max-width: 250px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.swiper-pagination::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.custom-pagination button {
+  transition: background-color 0.3s ease;
+}
+
+/* EkskulSliderHome.css */
+button {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}

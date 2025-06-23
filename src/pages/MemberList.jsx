@@ -107,7 +107,7 @@ export default function MemberList() {
           <IconButton edge="start" color="inherit" onClick={handleBack}>
             <ArrowBackIosNewIcon />
           </IconButton>
-          <Typography variant="h6">Daftar Anggota</Typography>
+          <Typography variant="h6"> Anggota</Typography>
           <div />
         </Toolbar>
       </AppBar>
@@ -136,6 +136,7 @@ export default function MemberList() {
                 <TableCell>No</TableCell>
                 <TableCell>NISN</TableCell>
                 <TableCell>Nama</TableCell>
+                <TableCell>Phone</TableCell>
                 <TableCell>Kelas</TableCell>
                 <TableCell>Aksi</TableCell>
               </TableRow>
@@ -146,6 +147,7 @@ export default function MemberList() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{student.nisn}</TableCell>
                   <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.phone}</TableCell>
                   <TableCell>{student.class}</TableCell>
                   <TableCell className="space-x-2">
                     <Button size="small" variant="outlined" onClick={() => handleEdit(student.id)}>Edit</Button>
