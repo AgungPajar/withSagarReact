@@ -67,10 +67,7 @@ export default function Dashboard() {
           >
             <div>
               <Box display="flex" alignItems="center" px={2} py={2}>
-                <img src="/smealogo.png" alt="Logo" style={{ height: '40px', marginRight: 10 }} />
-                <Typography fontWeight="bold" variant="h6">
-                  OSSAGAR 59
-                </Typography>
+                c
               </Box>
               <Divider sx={{ borderColor: '#97C1FF' }} />
               <List>

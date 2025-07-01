@@ -27,13 +27,17 @@ export default function Login() {
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
       // Redirect sesuai role
+      // Redirect sesuai role
       if (res.data.user.role === 'osis') {
         navigate('/admin/dashboard');
       } else if (res.data.user.role === 'club_pengurus' && res.data.user.club_hash_id) {
-         navigate(`/club/${res.data.user.club_hash_id}`);
+        navigate(`/club/${res.data.user.club_hash_id}`);
+      } else if (res.data.user.role === 'student' && res.data.user.student_hash_id) {
+        navigate(`/student/${res.data.user.student_hash_id}`);
       } else {
-        alert('User tidak memiliki ekskul yang valid');
+        alert('User tidak memiliki peran atau ID yang valid');
       }
+
     } catch (err) {
       console.error(err); // Lihat error lengkap di console
 

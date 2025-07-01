@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-coverflow';
 import { Autoplay, Navigation, EffectCoverflow } from 'swiper/modules';
-import apiClient from '../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
 import { motion } from 'framer-motion';
 import '../css/EkskulSliderHome.css';
 
@@ -86,7 +86,11 @@ const EkstrakurikulerSlider = () => {
                   <div className="bg-gray-200 aspect-square flex items-center justify-center mb-4 rounded-lg overflow-hidden p-4 max-h-32 mx-auto">
                     {club.logo_path ? (
                       <img
-                        src={club.logo_path}
+                        src={
+                          club?.logo_path
+                            ? `${STORAGE_URL}/${club.logo_path}`
+                            : '/logoeks.png'
+                        }
                         alt={club.name}
                         className="object-contain w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28"
                       />
