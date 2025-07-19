@@ -34,7 +34,7 @@ export default function DashboardAdmin() {
   return (
     <div className="flex">
       <SidebarAdmin />
-      <main className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full">
+      <main className="flex-1 p-4 pt-24 md:pt-16 md:ml-64 w-full">
         <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

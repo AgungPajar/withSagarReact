@@ -43,7 +43,7 @@ export default function ClubsAdminPage() {
     <div className="flex">
       <SidebarAdmin />
 
-      <main className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full">
+      <main className="flex-1 p-4 pt-24 md:pt-16 md:ml-64 w-full">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
           <h1 className="text-2xl font-bold">EKSTRAKURIKULER SMKN 1 GARUT</h1>
 

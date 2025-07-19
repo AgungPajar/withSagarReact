@@ -1,105 +1,34 @@
-import React, { useState } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Menu,
-  MenuItem,
-  Box,
-  ListItem,
-  Drawer,
-  List,
-  ListItemText,
-  useMediaQuery,
-  useTheme,
-  Divider,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
-import LoginIcon from '@mui/icons-material/Login';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, Box, Link } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
 import EkskulSlider from '../components/EkskulSliderHome';
+import { motion } from 'framer-motion';
 
 export default function Dashboard() {
+  const { clubId } = useParams();
+  const { studentId } = useParams();
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const users = JSON.parse(localStorage.getItem('user'));
+  const studentHashId = users?.student_hash_id;
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  const toggleDrawer = (open) => () => {
-    setDrawerOpen(open);
-  };
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    setUser(storedUser);
+  }, []);
+  
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'white' }}>
-      {/* Drawer for Mobile */}
-      {isMobile && (
-        <Drawer
-          anchor="left"
-          open={drawerOpen}
-          onClose={toggleDrawer(false)}
-          PaperProps={{
-            sx: {
-              width: 280,
-              color: '#000',
-              borderRight: '2px solid #97C1FF',
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100%',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <Box display="flex" alignItems="center" px={2} py={2}>
-                c
-              </Box>
-              <Divider sx={{ borderColor: '#97C1FF' }} />
-              <List>
-                <ListItem button onClick={() => { navigate('/'); setDrawerOpen(false); }}>
-                  <HomeIcon sx={{ mr: 2 }} />
-                  <ListItemText primary="Beranda" />
-                </ListItem>
-                <ListItem button onClick={() => { navigate('/login'); setDrawerOpen(false); }}>
-                  <LoginIcon sx={{ mr: 2 }} />
-                  <ListItemText primary="Login" />
-                </ListItem>
-                <ListItem button onClick={() => { navigate('/register-siswa'); setDrawerOpen(false); }}>
-                  <GroupAddIcon sx={{ mr: 2 }} />
-                  <ListItemText primary="Daftar Ekskul" />
-                </ListItem>
-                <ListItem button onClick={() => { navigate('/porest'); setDrawerOpen(false); }}>
-                  <EventNoteIcon sx={{ mr: 2 }} />
-                  <ListItemText primary="Daftar ClassMeet" />
-                </ListItem>
-              </List>
-            </div>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              textAlign="center"
-              sx={{ py: 2 }}
-            >
-              copyright OSSAGAR 59
-            </Typography>
-          </Box>
-        </Drawer>
-      )}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'white',
+        overflowX: 'hidden',
+      }}
+    >
+      {loading && <LoadingSpinner />}
 
       {/* Navbar */}
       <AppBar
@@ -107,76 +36,70 @@ export default function Dashboard() {
         elevation={0}
         color="transparent"
         sx={{
-          borderRadius: '16px',
-          border: '1px solid #ccc',
+          borderRadius: '24px',
+          border: '2px solid #3B82F6',
+          boxShadow: '0 8px 12px rgba(0, 0, 0, 0.3)',
           margin: '2rem auto',
           width: '90%',
           maxWidth: '1200px',
           backgroundColor: 'white',
-          paddingX: 4,
+          paddingX: 3,
         }}
       >
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          {/* Logo + Judul */}
           <Box display="flex" alignItems="center" gap={2}>
-            <img src="/smealogo.png" alt="Logo" style={{ height: '40px' }} />
-            <Typography variant="h6" fontWeight="bold" color="#4D9CFF">
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{
+                color: '#3B82F6',
+                fontSize: '1.2rem',
+              }}
+            >
               OSSAGAR'59
             </Typography>
           </Box>
 
-          <Box display="flex" alignItems="center" gap={2}>
-            <IconButton
-              edge="end"
-              color="inherit"
-              onClick={isMobile ? toggleDrawer(true) : handleMenuOpen}
+          {/* Tombol Login */}
+          {user ? (
+            <button
+              onClick={() => {
+                if (user.role === 'osis') return navigate('/admin/dashboard');
+                if (user.role === 'mpk') return navigate('/mpk/dashboard');
+                if (user.role === 'club_pengurus') return navigate(`/club/${clubId}`);
+                if (user.role === 'student') return navigate(`/student/${studentHashId}`);
+              }}
+              className="bg-green-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-green-600 transition duration-200"
             >
-              <MenuIcon />
-            </IconButton>
-
-            {/* Login Button only for desktop */}
-            {!isMobile && (
-              <button
-                className="bg-blue-300 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-400"
-                onClick={() => navigate('/login')}
-              >
-                LOGIN
-              </button>
-            )}
-          </Box>
+              LANJUT
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-600 transition duration-200"
+            >
+              LOGIN
+            </button>
+          )}
         </Toolbar>
       </AppBar>
 
-      {/* Menu Dropdown for Desktop */}
-      {!isMobile && (
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={() => navigate('/')} disabled>
-            Home
-          </MenuItem>
-          <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
-          <MenuItem onClick={() => navigate('/register-siswa')} disabled>
-            Daftar Ekstrakurikuler
-          </MenuItem>
-          <MenuItem onClick={() => navigate('/porest')}>Daftar Porest ClassMeet</MenuItem>
-        </Menu>
-      )}
 
-      {/* Header Section */}
+
+      {/* Header Text */}
       <Box sx={{ bgcolor: '#ffffff', py: 4, textAlign: 'center' }}>
         <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
-          ORGANISASI & EKSTRAKURIKULER <br />
+          ORGANISASI <br /> & <br /> EKSTRAKURIKULER <br />
           <span style={{ color: '#333' }}>SMK NEGERI 1 GARUT</span>
         </Typography>
-        <Typography variant="subtitle1" color="textSecondary">
+        <Typography variant="subtitle1" color="textSecondary" translate="no">
           HIJI HATE, HIJI HARTI, NGAEHIJI NGABAKTI
         </Typography>
       </Box>
 
-      {/* Card Section */}
-      <EkskulSlider />
+      {/* Slider Ekskul */}
+      <EkskulSlider onLoadFinish={() => setLoading(false)} />
 
       {/* Footer */}
       <Box
@@ -191,6 +114,23 @@ export default function Dashboard() {
       >
         © 2025 OSIS SMK NEGERI 1 GARUT
       </Box>
-    </Box>
+      <a
+        href="/ttsform"
+        className="fixed bottom-2 right-8 z-[9999] cursor-pointer"
+      >
+        <motion.img
+          src="/ttslogo.png"
+          alt="TTS"
+          className="w-40 h-40 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
+          animate={{ y: [60, -60, 60] }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      </a>
+
+    </Box >
   );
 }

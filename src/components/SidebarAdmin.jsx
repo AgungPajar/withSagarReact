@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu as MenuIcon, X as CloseIcon } from 'lucide-react';
@@ -9,6 +9,9 @@ import {
   ChevronDown,
   ChevronUp,
   GraduationCap,
+  MessageCircle,
+  Users,
+  Edit3,
 } from 'lucide-react';
 
 const listVariants = {
@@ -26,20 +29,55 @@ const itemVariants = {
 };
 
 export default function SidebarClub() {
-  const { clubId } = useParams();
+  const { id } = useParams();
+  const clubId = localStorage.getItem('club_id');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('user'); // ini penting bro
     navigate('/');
   };
 
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  if (!user) {
+    alert('Silakan login terlebih dahulu');
+    return navigate('/');
+  }
+
+  // Kalau role bukan 'osis' maka langsung tolak akses ke sidebar admin
+  if (user.role !== 'osis') {
+    alert('Akses tidak diizinkan');
+    return navigate('/');
+  }
+
+  // Cek apakah ID di URL cocok dengan ID user login
+  if (id && user.id.toString() !== id.toString()) {
+    alert('Akses tidak sesuai');
+    return navigate(`/admin/${user.id}/members`); // redirect ke ID-nya sendiri
+  }
+}, [id, navigate]);
+
+
+
+
+  const isSubmenuActive = (submenu) =>
+    submenu?.some((sub) => location.pathname === sub.to);
+
+
+
   const menuItems = [
     { label: 'Home', to: '/admin/dashboard', icon: <Home size={18} /> },
-    { label: 'Ekstrakurikuller', to: `/admin/clubs` },
+    { label: 'Anggota', to: `/admin/${user?.id}/members`, icon: <Users size={18} /> },
+    { label: 'TALK TO SAGAR', to: `/admin/ttsadmin`, icon: <MessageCircle size={18} /> },
+    { label: 'Ekstrakurikuller', to: `/admin/clubs`, icon: <Users size={18} /> },
     {
       label: 'Siswa',
       icon: <GraduationCap size={18} />,
@@ -49,6 +87,7 @@ export default function SidebarClub() {
         { label: 'KELAS XII', to: '/admin/student/classxii' },
       ],
     },
+    { label: 'Edit Profile', to: `/admin/editadmin`, icon: <Edit3 size={18} /> },
     { label: 'Logout', onClick: handleLogout, danger: true, icon: <LogOut size={18} /> },
   ];
 
@@ -82,7 +121,7 @@ export default function SidebarClub() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          className=" fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         >
           <motion.div
@@ -117,7 +156,10 @@ export default function SidebarClub() {
                         onClick={() =>
                           setOpenSubmenu(openSubmenu === item.label ? null : item.label)
                         }
-                        className="flex items-center justify-between w-full px-4 py-2 text-gray-800 hover:text-blue-500"
+                        className={`flex items-center justify-between w-full px-4 py-2 rounded transition ${isSubmenuActive(item.submenu)
+                          ? 'bg-blue-500 text-white font-semibold'
+                          : 'text-gray-800 hover:text-blue-500'
+                          }`}
                       >
                         <span className="flex items-center gap-2">
                           {item.icon}
@@ -215,7 +257,10 @@ export default function SidebarClub() {
                     onClick={() =>
                       setOpenSubmenu(openSubmenu === item.label ? null : item.label)
                     }
-                    className="flex items-center justify-between w-full px-4 py-2 text-gray-800 hover:text-blue-500"
+                    className={`flex items-center justify-between w-full px-4 py-2 rounded transition ${isSubmenuActive(item.submenu)
+                      ? 'bg-blue-500 text-white font-semibold'
+                      : 'text-gray-800 hover:text-blue-500'
+                      }`}
                   >
                     <span className="flex items-center gap-2">
                       {item.icon}

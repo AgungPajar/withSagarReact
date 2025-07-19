@@ -34,6 +34,7 @@ export default function SidebarClub() {
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('user'); // ini penting bro
     navigate('/');
   };
 

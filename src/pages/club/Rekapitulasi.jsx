@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -16,37 +12,49 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Box
+  Box,
+  CircularProgress,
+  Typography,
 } from '@mui/material';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import apiClient from '../../utils/axiosConfig';
 import dayjs from 'dayjs';
 import SidebarClub from '../../components/SidebarClub';
+import { motion } from 'framer-motion';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import Footer from '../../components/Footer';
+
+const MySwal = withReactContent(Swal);
 
 export default function RekapitulasiPage() {
-  const navigate = useNavigate();
   const { clubId } = useParams();
   const [tanggal, setTanggal] = useState(dayjs());
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
 
-
-  const handleBack = () => navigate(-1);
-
   const fetchRekap = async () => {
     try {
+      setLoading(true);
       const res = await apiClient.get(`/rekapitulasi?date=${tanggal.format('YYYY-MM-DD')}&club_id=${clubId}`);
       setData(res.data);
     } catch (error) {
-      console.error('❌ Gagal fetch rekap:', error);
-      alert('Gagal memuat data rekap');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Gagal memuat data!',
+        toast: true,
+        timer: 3000,
+        position: 'top-end',
+        showConfirmButton: false
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,8 +87,14 @@ export default function RekapitulasiPage() {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('❌ Gagal export:', error);
-      alert('Gagal export Excel');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Gagal export Excel!',
+        toast: true,
+        timer: 3000,
+        position: 'top-end',
+        showConfirmButton: false
+      });
     }
   };
 
@@ -103,129 +117,129 @@ export default function RekapitulasiPage() {
       document.body.removeChild(link);
       setOpenModal(false);
     } catch (error) {
-      console.error('❌ Gagal export:', error);
-      alert('Gagal mengunduh rekap filter tanggal');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Export filter gagal!',
+        toast: true,
+        timer: 3000,
+        position: 'top-end',
+        showConfirmButton: false
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 p-6">
-      {/* ✅ Navbar */}
-      <SidebarClub/>
-
-      <main style={{ marginTop: '4vh' }} className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full">
-      {/* 🔍 Filter + Export */}
-      <div className="flex items-center justify-between my-5 gap-4 flex-wrap">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Filter Tanggal"
-            value={tanggal}
-            onChange={(newValue) => setTanggal(newValue)}
-            format="YYYY-MM-DD"
-            slotProps={{ textField: { fullWidth: false } }}
-          />
-        </LocalizationProvider>
-
-        <div className="flex gap-2">
-          <Button variant="outlined" onClick={() => handleExport('daily')}>
-            Export Harian
-          </Button>
-          <Button size="small" variant="outlined" onClick={() => setOpenModal(true)}>
-            Rekap Filter
-          </Button>
+    <div>
+    <div className="flex">
+      <SidebarClub />
+      <motion.main
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="flex-1 p-10 pt-24 md:ml-64"
+      >
+        <Typography variant="h6" className="pb-14">Rekapitulasi Presensi</Typography>
+        <div className="mb-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Filter Tanggal"
+              value={tanggal}
+              onChange={(newValue) => setTanggal(newValue)}
+              format="YYYY-MM-DD"
+              slotProps={{ textField: { fullWidth: false } }}
+            />
+          </LocalizationProvider>
+          <div className="flex gap-2">
+            <Button variant="outlined" onClick={() => handleExport('daily')}>
+              Export Harian
+            </Button>
+            <Button variant="outlined" onClick={() => setOpenModal(true)}>
+              Rekap Filter
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* 📊 Tabel Rekap */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>No</TableCell>
-              <TableCell>Nama</TableCell>
-              <TableCell>Kelas</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  Tidak ada data
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{item.student?.name}</TableCell>
-                  <TableCell>{item.student?.class}</TableCell>
-                  <TableCell>{item.status}</TableCell> 
-                  {/* Jika Hadir berwarna hijau jika tidak berwarna merah */}
+        <Paper elevation={2}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>No</TableCell>
+                  <TableCell>Nama</TableCell>
+                  <TableCell>Kelas</TableCell>
+                  <TableCell>Status</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              </TableHead>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      <CircularProgress size={24} sx={{ mr: 1 }} />
+                      Tunggu sebentar...
+                    </TableCell>
+                  </TableRow>
+                ) : data.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      Tidak ada data
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  data.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{item.student?.name}</TableCell>
+                      <TableCell>{item.student?.class} {item.student?.jurusan?.singkatan} {item.student?.rombel}</TableCell>
+                      <TableCell>{item.status}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
 
-      {/* Footer */}
-      <footer style={{ marginTop: 32, textAlign: 'center', fontSize: 12, color: '#555' }}>
-        © 2025 OSIS SMK NEGERI 1 GARUT
-      </footer>
-      </main>
-
-      {/* modal */}
-      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="xs" fullWidth>
-        <DialogTitle
-          sx={{
-            textAlign: 'center',
-            fontWeight: 'bold',
-            color: '#1e3a8a',
-            borderBottom: '1px solid #90caf9',
-            backgroundColor: 'white',
-            marginBottom: 2,
-          }}
-        >
-          Rekap Filter
-        </DialogTitle>
-        <DialogContent sx={{ backgroundColor: 'white', py: 3 }}>
-          <Box sx={{ mb: 2, mt: 2 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Dari Tanggal"
-                value={fromDate}
-                onChange={(newValue) => setFromDate(newValue)}
-                format="YYYY-MM-DD"
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </LocalizationProvider>
-          </Box>
-          <Box>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Sampai Tanggal"
-                value={toDate}
-                onChange={(newValue) => setToDate(newValue)}
-                format="YYYY-MM-DD"
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </LocalizationProvider>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-between', px: 3, py: 2, backgroundColor: 'white' }}>
-          <Button onClick={() => setOpenModal(false)} variant="outlined" color="secondary">
-            Batal
-          </Button>
-          <Button onClick={handleExportFiltered} variant="contained" color="primary">
-            Export
-          </Button>
-        </DialogActions>
-      </Dialog>
-
+        {/* Modal Filter */}
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="xs" fullWidth>
+          <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', color: '#1e3a8a' }}>
+            Rekap Filter
+          </DialogTitle>
+          <DialogContent sx={{ backgroundColor: 'white', py: 3 }}>
+            <Box sx={{ mb: 2 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Dari Tanggal"
+                  value={fromDate}
+                  onChange={(newValue) => setFromDate(newValue)}
+                  format="YYYY-MM-DD"
+                  slotProps={{ textField: { fullWidth: true } }}
+                />
+              </LocalizationProvider>
+            </Box>
+            <Box>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Sampai Tanggal"
+                  value={toDate}
+                  onChange={(newValue) => setToDate(newValue)}
+                  format="YYYY-MM-DD"
+                  slotProps={{ textField: { fullWidth: true } }}
+                />
+              </LocalizationProvider>
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button onClick={() => setOpenModal(false)} variant="outlined" color="secondary">
+              Batal
+            </Button>
+            <Button onClick={handleExportFiltered} variant="contained" color="primary">
+              Export
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </motion.main>
     </div>
-
+    <Footer/>
+    </div>
   );
-
 }
-

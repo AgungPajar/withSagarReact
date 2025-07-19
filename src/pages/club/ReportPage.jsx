@@ -7,10 +7,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import imageCompression from 'browser-image-compression';
+import Swal from 'sweetalert2';
 
 import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
 import SidebarClub from '../../components/SidebarClub';
 import Footer from '../../components/Footer';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function ReportPage() {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ export default function ReportPage() {
   const [photoBlob, setPhotoBlob] = useState(null);
   const [photoDataUrl, setPhotoDataUrl] = useState(null);
   const [photoTaken, setPhotoTaken] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
 
   useEffect(() => {
     const fetchClub = async () => {
@@ -74,26 +78,58 @@ export default function ReportPage() {
 
   const handleSubmit = async () => {
     if (!materi || !tempat) {
-      alert('Materi dan tempat harus diisi');
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: 'Materi dan tempat harus diisi',
+        showConfirmButton: false,
+        timer: 2000,
+      });
       return;
     }
+
+    setSubmitting(true);
+
     try {
       const formData = new FormData();
       formData.append('date', tanggal.format('YYYY-MM-DD'));
       formData.append('materi', materi);
       formData.append('tempat', tempat);
+
       if (photoBlob) {
         const fileName = `photo_${clubId}_${tanggal.format('YYYYMMDD')}.png`;
         const file = new File([photoBlob], fileName, { type: 'image/png' });
         formData.append('photo', file);
       }
+
       await apiClient.post(`/clubs/${clubId}/activity-reports`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      alert('Laporan berhasil dikirim! Lanjut ke presensi.');
-      navigate(`/attendance/${clubId}/attendance`);
+
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Laporan berhasil dikirim!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      setTimeout(() => {
+        navigate(`/attendance/${clubId}/attendance`);
+      }, 500);
     } catch (error) {
-      alert('Gagal kirim laporan');
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Gagal kirim laporan',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -109,13 +145,7 @@ export default function ReportPage() {
           className="min-h-screen pt-1 md:pt-1 md:ml-64 flex justify-center items-center"
         >
           {loading ? (
-            <div className="flex justify-center items-center h-96">
-              <motion.div
-                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-              />
-            </div>
+            <LoadingSpinner />
           ) : (
             <Paper
               elevation={3}
@@ -193,9 +223,11 @@ export default function ReportPage() {
                 fullWidth
                 sx={{ mt: 3 }}
                 onClick={handleSubmit}
+                disabled={submitting}
               >
-                Next: Isi Presensi
+                {submitting ? 'Mengirim...' : 'Next: Isi Presensi'}
               </Button>
+
             </Paper>
           )}
         </motion.main>

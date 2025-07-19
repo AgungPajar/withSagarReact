@@ -11,6 +11,8 @@ export default function DataKelasXI() {
   const [jurusans, setJurusans] = useState([]);
   const [selectedJurusan, setSelectedJurusan] = useState('');
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchMajors();
@@ -21,11 +23,14 @@ export default function DataKelasXI() {
   }, [selectedJurusan]);
 
   const fetchMajors = async () => {
+    setIsLoading(true);
     try {
       const res = await apiClient.get('/admin/jurusans');
       setJurusans(res.data); // pastikan API-nya return array
     } catch (err) {
       console.error('Failed fetch majors:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,6 +70,45 @@ export default function DataKelasXI() {
       setSelectedStudents(students.map((s) => s.id));
     }
   };
+
+  const handleDeleteSelected = async () => {
+    if (selectedStudents.length === 0) {
+      Swal.fire('Oops!', 'Pilih siswa dulu bro!', 'warning');
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      title: 'Yakin mau hapus siswa terpilih?',
+      text: 'Data yang dihapus tidak bisa dikembalikan!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus',
+      cancelButtonText: 'Batal',
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700',
+        cancelButton: 'bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded hover:bg-gray-200 ml-2',
+      },
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        for (const id of selectedStudents) {
+          await apiClient.delete('/admin/students/delete-multiple', {
+            data: { ids: selectedStudents },
+          });
+
+        }
+        Swal.fire('Sukses', 'Siswa berhasil dihapus', 'success');
+        fetchStudents();
+        setSelectedStudents([]);
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal', 'Gagal menghapus data siswa', 'error');
+      }
+    }
+  };
+
 
   const handleCheckboxChange = (id) => {
     setSelectedStudents((prev) =>
@@ -123,7 +167,28 @@ export default function DataKelasXI() {
         fetchStudents();
       } catch (err) {
         console.error(err);
-        Swal.fire('Gagal', 'Terjadi kesalahan saat upload', 'error');
+
+        // Tangani error duplikat NISN
+        if (
+          err.response &&
+          err.response.data &&
+          typeof err.response.data.message === 'string' &&
+          err.response.data.message.includes('Duplicate entry')
+        ) {
+          // Ambil NISN & Nama siswa (optional, jika backend kasih datanya)
+          const match = err.response.data.message.match(/Duplicate entry '(\d+)'/);
+          const nisn = match ? match[1] : 'NISN tidak diketahui';
+
+          // Tampilkan alert khusus
+          Swal.fire(
+            'Gagal Upload',
+            `Data siswa dengan NISN ${nisn} sudah terdaftar.`,
+            'error'
+          );
+        } else {
+          // Error umum
+          Swal.fire('Gagal', 'Terjadi kesalahan saat upload', 'error');
+        }
       }
     };
     input.click();
@@ -174,10 +239,13 @@ export default function DataKelasXI() {
   return (
     <div className="flex">
       <SidebarAdmin />
-      <main className="flex-1 p-6 md:pt-16 md:ml-64 w-full">
-        <Typography variant="h5" className="mb-4 font-bold">DATA KELAS 11</Typography>
+      <main className="flex-1 p-6 pt-24 md:pt-16 md:ml-64 w-full">
+        <Typography variant="h5" className="mb-4 font-bold">DATA KELAS 10</Typography>
 
-        <div className="flex flex-wrap items-center justify-between mb-4 gap-4">
+        <div className="flex pt-8 flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <Button variant="contained" color="success" onClick={handleInsertData} className="text-xs px-3 py-1.5 sm:text-sm sm:px-4 sm:py-2">
+            Insert Data
+          </Button>
           <FormControl size="small" sx={{ minWidth: 200, maxWidth: 250 }}>
             <InputLabel>Filter Jurusan</InputLabel>
             <Select
@@ -195,15 +263,27 @@ export default function DataKelasXI() {
             </Select>
           </FormControl>
 
+          <input
+            type="text"
+            placeholder="Cari Nama atau NISN"
+            className="border p-2 rounded text-sm w-full md:w-64"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
 
-
-          <div className="flex gap-2">
-            <Button variant="contained" color="success" onClick={handleInsertData}>
-              Insert Data
-            </Button>
-            <Button variant="outlined" onClick={handleNaikKelas}>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleDeleteSelected}
+              className="text-xs px-3 py-2 sm:text-sm sm:px-4 sm:py-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition duration-200"
+            >
+              Hapus Siswa
+            </button>
+            <button
+              onClick={handleNaikKelas}
+              className="text-xs px-3 py-2 sm:text-sm sm:px-4 sm:py-2 border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-white transition duration-200"
+            >
               Naikkan ke Kelas
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -219,35 +299,49 @@ export default function DataKelasXI() {
                   />
                 </th>
                 <th className="p-2 w-8 border-l border-r">No</th>
-                <th className="p-2 w-64 border-l border-r">Nama</th>
                 <th className="p-2 w-40 border-l border-r">NISN</th>
+                <th className="p-2 w-64 border-l border-r">Nama</th>
                 <th className="p-2 w-40 border-l border-r">Kelas</th>
                 <th className="p-2 w-40 border-l border-r">Ekskul</th>
               </tr>
             </thead>
             <tbody>
-              {students
-                .filter((s) => !selectedJurusan || s.jurusan?.singkatan === selectedJurusan)
-                .map((s, i) => (
-                  <tr key={s.id}
-                    className={`border-b ${i % 2 === 0 ? 'bg-white' : 'bg-[#e2f4ff]'
-                      }`}>
-                    <td className="p-2 w-6 text-center border-l border-r">
-                      <input
-                        type="checkbox"
-                        checked={selectedStudents.includes(s.id)}
-                        onChange={() => handleCheckboxChange(s.id)}
-                      />
-                    </td>
-                    <td className="p-2 w-8 border-l border-r">{i + 1}</td>
-                    <td className="p-2 w-64 border-l border-r">{s.name}</td>
-                    <td className="p-2 w-40 border-l border-r">{s.nisn}</td>
-                    <td className="p-2 w-40 border-l border-r">{s.class} {s.jurusan?.singkatan} {s.rombel}</td>
-                    <td className="p-2 w-40 border-l border-r">
-                      {s.clubs?.map((club) => club.name).join(', ') || '-'}
-                    </td>
-                  </tr>
-                ))}
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-500 font-semibold">
+                    Sedang Memuat Data...
+                  </td>
+                </tr>
+              ) : (
+                students
+                  .filter((s) => {
+                    const matchesJurusan = !selectedJurusan || s.jurusan?.singkatan === selectedJurusan;
+                    const matchesSearch =
+                      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      s.nisn.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchesJurusan && matchesSearch;
+                  })
+                  .map((s, i) => (
+                    <tr key={s.id}
+                      className={`border-b ${i % 2 === 0 ? 'bg-white' : 'bg-[#e2f4ff]'
+                        }`}>
+                      <td className="p-2 w-6 text-center border-l border-r">
+                        <input
+                          type="checkbox"
+                          checked={selectedStudents.includes(s.id)}
+                          onChange={() => handleCheckboxChange(s.id)}
+                        />
+                      </td>
+                      <td className="p-2 w-8 border-l border-r">{i + 1}</td>
+                      <td className="p-2 w-40 border-l border-r">{s.nisn}</td>
+                      <td className="p-2 w-64 border-l border-r">{s.name}</td>
+                      <td className="p-2 w-40 border-l border-r">{s.class} {s.jurusan?.singkatan} {s.rombel}</td>
+                      <td className="p-2 w-40 border-l border-r">
+                        {s.clubs?.map((club) => club.name).join(', ') || '-'}
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>
