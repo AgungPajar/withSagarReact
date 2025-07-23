@@ -10,7 +10,9 @@ import {
   Edit3,
   LogOut,
   CalendarCheck,
+  ChevronDown,
 } from 'lucide-react';
+
 
 const listVariants = {
   hidden: {},
@@ -31,6 +33,7 @@ export default function SidebarClub() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -38,9 +41,18 @@ export default function SidebarClub() {
     navigate('/');
   };
 
+  const isSubmenuActive = (submenu) => submenu?.some((sub) => location.pathname === sub.to);
+
   const menuItems = [
     { label: 'Home', to: `/club/${clubId}`, icon: <Home size={18} /> },
-    { label: 'Presensi', to: `/attendance/${clubId}/report`, icon: <CalendarCheck size={18} /> },
+    {
+      label: 'Report&Presensi',
+      icon: <CalendarCheck size={18} />,
+      submenu: [
+        { label: 'Report', to: `/attendance/${clubId}/report`, icon: <CalendarCheck size={18} /> },
+        { label: 'Presensi', to: `/attendance/${clubId}/attendance`, icon: <CalendarCheck size={18} /> },
+      ],
+    },
     { label: 'Anggota', to: `/club/${clubId}/members`, icon: <Users size={18} /> },
     { label: 'Rekapitulasi', to: `/club/${clubId}/rekap`, icon: <ClipboardList size={18} /> },
     { label: 'Edit Profile', to: `/profile/edit/${clubId}`, icon: <Edit3 size={18} /> },
@@ -102,6 +114,53 @@ export default function SidebarClub() {
             >
               {menuItems.map((item, idx) => {
                 const isActive = location.pathname === item.to;
+                if (item.submenu) {
+                  return (
+                    <motion.li key={idx} variants={itemVariants}>
+                      <button
+                        onClick={() =>
+                          setOpenSubmenu(openSubmenu === item.label ? null : item.label)
+                        }
+                        className={`flex items-center justify-between w-full px-4 py-2 rounded transition ${isSubmenuActive(item.submenu)
+                          ? 'bg-blue-500 text-white font-semibold'
+                          : 'text-gray-800 hover:text-blue-500'
+                          }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {item.icon}
+                          {item.label}
+                        </span>
+                        <motion.div
+                          initial={false}
+                          animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown size={16} />
+                        </motion.div>
+                      </button>
+                      {openSubmenu === item.label && (
+                        <motion.ul
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          className="ml-6 space-y-2"
+                        >
+                          {item.submenu.map((sub, i) => (
+                            <li key={i}>
+                              <Link
+                                to={sub.to}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`block px-4 py-1 rounded text-sm transition hover:text-blue-600 ${location.pathname === sub.to ? 'font-semibold text-blue-700' : 'text-gray-700'}`}
+                              >
+                                {sub.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </motion.ul>
+                      )}
+                    </motion.li>
+                  );
+                }
+
                 return (
                   <motion.li key={idx} variants={itemVariants}>
                     {item.to ? (
@@ -152,6 +211,53 @@ export default function SidebarClub() {
         <motion.ul className="space-y-4" variants={listVariants} initial="hidden" animate="visible">
           {menuItems.map((item, idx) => {
             const isActive = location.pathname === item.to;
+            if (item.submenu) {
+              return (
+                <motion.li key={idx} variants={itemVariants}>
+                  <button
+                    onClick={() =>
+                      setOpenSubmenu(openSubmenu === item.label ? null : item.label)
+                    }
+                    className={`flex items-center justify-between w-full px-4 py-2 rounded transition ${isSubmenuActive(item.submenu)
+                      ? 'bg-blue-500 text-white font-semibold'
+                      : 'text-gray-800 hover:text-blue-500'
+                      }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {item.icon}
+                      {item.label}
+                    </span>
+                    <motion.div
+                      initial={false}
+                      animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={16} />
+                    </motion.div>
+                  </button>
+                  {openSubmenu === item.label && (
+                    <motion.ul
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="ml-6 space-y-2"
+                    >
+                      {item.submenu.map((sub, i) => (
+                        <li key={i}>
+                          <Link
+                            to={sub.to}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`block px-4 py-1 rounded text-sm transition hover:text-blue-600 ${location.pathname === sub.to ? 'font-semibold text-blue-700' : 'text-gray-700'}`}
+                          >
+                            {sub.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </motion.ul>
+                  )}
+                </motion.li>
+              );
+            }
+
             return (
               <motion.li key={idx} variants={itemVariants}>
                 {item.to ? (

@@ -78,6 +78,100 @@ export default function EditProfile() {
     }
   };
 
+  const handleChangePassword = () => {
+    Swal.fire({
+      title: 'Ubah Password',
+      html: `
+      <div style="position: relative;">
+        <input type="password" id="oldPassword" class="swal2-input" placeholder="Password Lama" />
+        <span onclick="toggleVisibility('oldPassword', this)" style="position:absolute; right:30px; top:12px; cursor:pointer; font-size:12px;">Show</span>
+      </div>
+      <div style="position: relative;">
+        <input type="password" id="newPassword" class="swal2-input" placeholder="Password Baru" />
+        <span onclick="toggleVisibility('newPassword', this)" style="position:absolute; right:30px; top:12px; cursor:pointer; font-size:12px;">Show</span>
+      </div>
+      <div style="position: relative;">
+        <input type="password" id="confirmPassword" class="swal2-input" placeholder="Konfirmasi Password Baru" />
+        <span onclick="toggleVisibility('confirmPassword', this)" style="position:absolute; right:30px; top:12px; cursor:pointer; font-size:12px;">Show</span>
+      </div>
+    `,
+      customClass: {
+        confirmButton: 'swal2-confirm btn btn-outline-purple',
+        cancelButton: 'swal2-cancel btn btn-outline-gray',
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Simpan',
+      cancelButtonText: 'Batal',
+      reverseButtons: true, // bikin simpan di kanan
+      preConfirm: () => {
+        const oldPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+          Swal.showValidationMessage('Semua kolom harus diisi');
+          return false;
+        }
+
+        if (newPassword !== confirmPassword) {
+          Swal.showValidationMessage('Password baru tidak cocok');
+          return false;
+        }
+
+        return { oldPassword, newPassword, confirmPassword };
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          Swal.showLoading();
+          await getCsrfToken();
+
+          const token = localStorage.getItem('access_token');
+          const xsrfToken = document.cookie
+            .split(';')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+
+          await apiClient.post('/profile/update', {
+            old_password: result.value.oldPassword,
+            new_password: result.value.newPassword,
+            new_password_confirmation: result.value.confirmPassword,
+          }, {
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+              ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }),
+            },
+            withCredentials: true,
+          });
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Password berhasil diperbarui',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } catch (err) {
+          console.error('Gagal ubah password:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: err?.response?.data?.message || 'Terjadi kesalahan saat mengubah password',
+          });
+        }
+      }
+    });
+  };
+
+  // Tambahkan script ini sekali di bawah app kamu (bisa di index.html atau satu kali saja di komponen utama)
+  window.toggleVisibility = function (id, el) {
+    const input = document.getElementById(id);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    el.textContent = isHidden ? 'Hide' : 'Show';
+  }
+
+
   const handleSubmit = async () => {
     setLoading2(true);
     try {
@@ -131,8 +225,6 @@ export default function EditProfile() {
       setLoading2(false);
     }
   };
-
-
 
 
   return (
@@ -198,15 +290,15 @@ export default function EditProfile() {
                   margin="normal"
                 />
 
-                <TextField
-                  label="Ubah Password (Input)"
+                <Button
+                  variant='outlined'
+                  color="error"
                   fullWidth
-                  type="password"
-                  className="mb-6"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  margin="normal"
-                />
+                  className='mb-4 mt-8'
+                  onClick={handleChangePassword}
+                >
+                  Ubah Password
+                </Button>
 
                 <LoadingButton
                   loading={loading2}

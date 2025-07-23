@@ -45,33 +45,27 @@ export default function SidebarClub() {
   };
 
   useEffect(() => {
-  const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!user) {
-    alert('Silakan login terlebih dahulu');
-    return navigate('/');
-  }
+    if (!user) {
+      alert('Silakan login terlebih dahulu');
+      return navigate('/');
+    }
 
-  // Kalau role bukan 'osis' maka langsung tolak akses ke sidebar admin
-  if (user.role !== 'osis') {
-    alert('Akses tidak diizinkan');
-    return navigate('/');
-  }
+    // Kalau role bukan 'osis' maka langsung tolak akses ke sidebar admin
+    if (user.role !== 'osis') {
+      alert('Akses tidak diizinkan');
+      return navigate('/');
+    }
 
-  // Cek apakah ID di URL cocok dengan ID user login
-  if (id && user.id.toString() !== id.toString()) {
-    alert('Akses tidak sesuai');
-    return navigate(`/admin/${user.id}/members`); // redirect ke ID-nya sendiri
-  }
-}, [id, navigate]);
+    // Cek apakah ID di URL cocok dengan ID user login
+    if (id && user.id.toString() !== id.toString()) {
+      alert('Akses tidak sesuai');
+      return navigate(`/admin/${user.id}/members`); // redirect ke ID-nya sendiri
+    }
+  }, [id, navigate]);
 
-
-
-
-  const isSubmenuActive = (submenu) =>
-    submenu?.some((sub) => location.pathname === sub.to);
-
-
+  const isSubmenuActive = (submenu) => submenu?.some((sub) => location.pathname === sub.to);
 
   const menuItems = [
     { label: 'Home', to: '/admin/dashboard', icon: <Home size={18} /> },

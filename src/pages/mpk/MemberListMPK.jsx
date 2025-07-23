@@ -112,6 +112,7 @@ export default function MemberListMPK() {
   const updateStatus = async (requestId, status) => {
     try {
       await apiClient.post(`/clubs/${clubId}/requests/${requestId}/confirm`, { status });
+
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -120,9 +121,12 @@ export default function MemberListMPK() {
         showConfirmButton: false,
         timer: 2000,
       });
+
       setPendingRequests(prev => prev.filter(m => m.id !== parseInt(requestId)));
-      const res = await apiClient.get(`/clubs/${clubId}/members`);
-      setMembers(res.data);
+
+      await fetchData();
+      Swal.close();
+
     } catch (err) {
       Swal.fire({
         toast: true,
@@ -135,21 +139,23 @@ export default function MemberListMPK() {
     }
   };
 
+  const fetchData = async () => {
+    try {
+      const resMembers = await apiClient.get(`/clubs/${clubId}/members`);
+      setMembers(resMembers.data);
+      const resRequests = await apiClient.get(`/clubs/${clubId}/requests`);
+      setPendingRequests(resRequests.data);
+    } catch (error) {
+      alert('Gagal memuat data ekskul: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resMembers = await apiClient.get(`/clubs/${clubId}/members`);
-        setMembers(resMembers.data);
-        const resRequests = await apiClient.get(`/clubs/${clubId}/requests`);
-        setPendingRequests(resRequests.data);
-      } catch (error) {
-        alert('Gagal memuat data ekskul: ' + error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, [clubId]);
+
 
   const handleDelete = async (requestId) => {
     const confirm = await Swal.fire({
@@ -187,69 +193,69 @@ export default function MemberListMPK() {
 
   return (
     <div>
-    <div className="min-h-screen bg-white text-gray-800 p-4 pt-5">
-      <div className="flex flex-col items-center justify-center w-full max-w-md md:max-w-full">
-        <SidebarAdminMPK />
-        <motion.main
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full"
-        >
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <Paper className="mt-6 w-full max-w-6xl mx-auto p-4">
-              <Typography variant="h6" className="mb-10">Daftar Anggota</Typography>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-                <input
-                  type="text"
-                  placeholder="Cari nama..."
-                  className="border px-3 py-1 rounded text-sm"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                />
-                <Button disabled variant="contained" onClick={() => navigate(`/club/${clubId}/members/add`)}>
-                  + Add Anggota
-                </Button>
-                <Button variant="contained" color="secondary" onClick={handleSeleksi}>
-                  Seleksi
-                </Button>
-              </div>
-              <div className="overflow-x-auto">
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No</TableCell>
-                      <TableCell>NISN</TableCell>
-                      <TableCell>Nama</TableCell>
-                      <TableCell>Phone</TableCell>
-                      <TableCell>Kelas</TableCell>
-                      <TableCell>Aksi</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredMembers.map((student, index)  => (
-                      <TableRow key={student.request_id}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{student.nisn}</TableCell>
-                        <TableCell>{student.name}</TableCell>
-                        <TableCell>{student.phone}</TableCell>
-                        <TableCell>{student.class} {student.jurusan_singkatan} {student.rombel}</TableCell>
-                        <TableCell>
-                          <Button size="small" variant="outlined" onClick={() => handleDelete(student.id)}>Hapus</Button>
-                        </TableCell>
+      <div className="min-h-screen bg-white text-gray-800 p-4 pt-5">
+        <div className="flex flex-col items-center justify-center w-full max-w-md md:max-w-full">
+          <SidebarAdminMPK />
+          <motion.main
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full"
+          >
+            {loading ? (
+              <LoadingSpinner />
+            ) : (
+              <Paper className="mt-6 w-full max-w-6xl mx-auto p-4">
+                <Typography variant="h6" className="mb-10">Daftar Anggota</Typography>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Cari nama..."
+                    className="border px-3 py-1 rounded text-sm"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                  />
+                  <Button disabled variant="contained" onClick={() => navigate(`/club/${clubId}/members/add`)}>
+                    + Add Anggota
+                  </Button>
+                  <Button variant="contained" color="secondary" onClick={handleSeleksi}>
+                    Seleksi
+                  </Button>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>No</TableCell>
+                        <TableCell>NISN</TableCell>
+                        <TableCell>Nama</TableCell>
+                        <TableCell>Phone</TableCell>
+                        <TableCell>Kelas</TableCell>
+                        <TableCell>Aksi</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Paper>
-          )}
-        </motion.main>
+                    </TableHead>
+                    <TableBody>
+                      {filteredMembers.map((student, index) => (
+                        <TableRow key={student.request_id}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{student.nisn}</TableCell>
+                          <TableCell>{student.name}</TableCell>
+                          <TableCell>{student.phone}</TableCell>
+                          <TableCell>{student.class} {student.jurusan_singkatan} {student.rombel}</TableCell>
+                          <TableCell>
+                            <Button size="small" variant="outlined" onClick={() => handleDelete(student.id)}>Hapus</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </Paper>
+            )}
+          </motion.main>
+        </div>
       </div>
-    </div>
-    <Footer/>
+      <Footer />
     </div>
   );
 }

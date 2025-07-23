@@ -197,6 +197,7 @@ export default function MemberList() {
   const updateStatus = async (requestId, status) => {
     try {
       await apiClient.post(`/clubs/${clubId}/requests/${requestId}/confirm`, { status });
+
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -205,12 +206,12 @@ export default function MemberList() {
         showConfirmButton: false,
         timer: 2000,
       });
-      setPendingRequests(prev => prev.filter(m => m.id !== parseInt(requestId)));
-      const res = await apiClient.get(`/clubs/${clubId}/members`);
-      setMembers(res.data);
 
+      setPendingRequests(prev => prev.filter(m => m.id !== parseInt(requestId)));
+
+      await fetchData();
       Swal.close();
-    fetchData();
+
     } catch (err) {
       Swal.fire({
         toast: true,
@@ -224,21 +225,21 @@ export default function MemberList() {
   };
 
   const fetchData = async () => {
-  try {
-    const resMembers = await apiClient.get(`/clubs/${clubId}/members`);
-    setMembers(resMembers.data);
-    const resRequests = await apiClient.get(`/clubs/${clubId}/requests`);
-    setPendingRequests(resRequests.data);
-  } catch (error) {
-    alert('Gagal memuat data ekskul: ' + error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const resMembers = await apiClient.get(`/clubs/${clubId}/members`);
+      setMembers(resMembers.data);
+      const resRequests = await apiClient.get(`/clubs/${clubId}/requests`);
+      setPendingRequests(resRequests.data);
+    } catch (error) {
+      alert('Gagal memuat data ekskul: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-useEffect(() => {
-  fetchData();
-}, [clubId]);
+  useEffect(() => {
+    fetchData();
+  }, [clubId]);
 
 
   const handleDelete = async (requestId) => {

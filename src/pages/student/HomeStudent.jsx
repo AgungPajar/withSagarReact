@@ -84,9 +84,9 @@ export default function HomeStudent() {
         const studentHashId = user?.student_hash_id;
 
         const res = await apiClient.get(`/student/${studentHashId}`);
-        const { phone, tanggal_lahir } = res.data;
+        const { phone, tanggal_lahir, alamat } = res.data;
 
-        if (!phone || !tanggal_lahir) {
+        if (!phone || !tanggal_lahir || !alamat) {
           Swal.fire({
             icon: 'warning',
             title: 'Lengkapi Profil',
@@ -197,7 +197,7 @@ export default function HomeStudent() {
                 </button>
               ) : club.status === 'accepted' ? (
                 <button
-                  className="w-full border border-blue-500 text-blue-600 hover:bg-blue-100 py-2 rounded mb-2 flex items-center justify-center gap-2"
+                  className="w-full border border-gray-400 text-gray-600 hover:bg-blue-100 py-2 rounded mb-2 flex items-center justify-center gap-2"
                   onClick={() =>
                       Swal.fire({
                         title: 'SELAMAT!!!',
