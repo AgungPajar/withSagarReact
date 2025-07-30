@@ -54,7 +54,14 @@ export default function SidebarClub() {
       ],
     },
     { label: 'Anggota', to: `/club/${clubId}/members`, icon: <Users size={18} /> },
-    { label: 'Rekapitulasi', to: `/club/${clubId}/rekap`, icon: <ClipboardList size={18} /> },
+    {
+      label: 'Rekapitulasi',
+      icon: <ClipboardList size={18} />,
+      submenu: [
+        { label: 'Presensi', to: `/club/${clubId}/rekap`, icon: <ClipboardList size={18} /> },
+        { label: 'Report', to: `/club/${clubId}/rekap-report`, icon: <ClipboardList size={18} /> },
+      ],
+    },
     { label: 'Edit Profile', to: `/profile/edit/${clubId}`, icon: <Edit3 size={18} /> },
     { label: 'Logout', onClick: handleLogout, danger: true, icon: <LogOut size={18} /> },
   ];

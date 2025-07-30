@@ -34,4 +34,10 @@
     -->
 </body>
 
+<script>
+  if (window.location.hostname.startsWith("www.")) {
+    window.location.href = window.location.href.replace("www.", "");
+  }
+</script>
+
 </html>

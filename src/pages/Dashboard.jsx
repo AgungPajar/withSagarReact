@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EkskulSlider from '../components/EkskulSliderHome';
 import { motion } from 'framer-motion';
+import Swal from 'sweetalert2';
 
 export default function Dashboard() {
   const { clubId } = useParams();
@@ -17,6 +18,19 @@ export default function Dashboard() {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     setUser(storedUser);
+
+    Swal.fire({
+      title: 'OSSAGAR 59',
+      text: 'guys maaf yaa karena ini masih tahap develop, kalau ada error kalian logout dulu terus refresh terus login lagi. Thanks GUYS',
+      icon: 'info',
+      confirmButtonText: 'Lanjutkan...',
+      confirmButtonColor: '#5aa1e4',
+      background: '#fff',
+      color: '#333',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+    });
   }, []);
   
 
@@ -28,7 +42,7 @@ export default function Dashboard() {
         overflowX: 'hidden',
       }}
     >
-      {loading && <LoadingSpinner />}
+      {loading && <LoadingSpinner />} 
 
       {/* Navbar */}
       <AppBar
@@ -94,7 +108,7 @@ export default function Dashboard() {
           <span style={{ color: '#333' }}>SMK NEGERI 1 GARUT</span>
         </Typography>
         <Typography variant="subtitle1" color="textSecondary" translate="no">
-          HIJI HATE, HIJI HARTI, NGAEHIJI NGABAKTI
+          HIJI HATE, HIJI HARTI, NGAHIJI NGABAKTI
         </Typography>
       </Box>
 
@@ -114,7 +128,7 @@ export default function Dashboard() {
       >
         © 2025 OSIS SMK NEGERI 1 GARUT
       </Box>
-      <a
+      {/* <a
         href="/ttsform"
         className="fixed bottom-2 right-8 z-[9999] cursor-pointer"
       >
@@ -129,7 +143,7 @@ export default function Dashboard() {
             ease: 'easeInOut',
           }}
         />
-      </a>
+      </a> */}
 
     </Box >
   );

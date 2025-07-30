@@ -240,7 +240,7 @@ export default function DataKelasXI() {
     <div className="flex">
       <SidebarAdmin />
       <main className="flex-1 p-6 pt-24 md:pt-16 md:ml-64 w-full">
-        <Typography variant="h5" className="mb-4 font-bold">DATA KELAS 10</Typography>
+        <Typography variant="h5" className="mb-4 font-bold">DATA KELAS 11 (SEBELAS)</Typography>
 
         <div className="flex pt-8 flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <Button variant="contained" color="success" onClick={handleInsertData} className="text-xs px-3 py-1.5 sm:text-sm sm:px-4 sm:py-2">

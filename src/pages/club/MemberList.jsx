@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../utils/axiosConfig';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
   Table,
   TableHead,
   TableRow,
@@ -279,13 +276,13 @@ export default function MemberList() {
   return (
     <div>
       <div className="min-h-screen bg-white text-gray-800 p-4 pt-5">
-        <div className="flex flex-col items-center justify-center w-full max-w-md md:max-w-full">
+        <div className="flex">
           <SidebarClub />
           <motion.main
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full"
+            className="flex-1 p-4 md:ml-64 w-full"
           >
             {loading ? (
               <LoadingSpinner />
@@ -344,5 +341,3 @@ export default function MemberList() {
     </div>
   );
 }
-
-// Nah ini bro di handleSeleksi nya itu ga responsive buat hp, terus kalau semisal udah di pencet Terima atau Tolak itu halamannya otomatis ngerefresh

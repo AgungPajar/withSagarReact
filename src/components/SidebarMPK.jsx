@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Users,
   Edit3,
+  Calendar
 } from 'lucide-react';
 
 const listVariants = {
@@ -69,8 +70,9 @@ export default function SidebarMPK() {
 
   const menuItems = [
     { label: 'Home', to: '/mpk/dashboard', icon: <Home size={18} /> },
-    { label: 'Anggota', to: `/mpk/${user?.id}/members`, icon: <MessageCircle size={18} /> },
+    { label: 'Anggota', to: `/mpk/${user?.id}/members`, icon: <Users size={18} /> },
     { label: 'TALK TO SAGAR', to: `/mpk/ttsadminmpk`, icon: <MessageCircle size={18} /> },
+    { label: 'Rekapitulasi', to: `/mpk/activity-reports`, icon: <Calendar size={18} /> },
     { label: 'Edit Profile', to: `/mpk/editmpk`, icon: <Edit3 size={18} /> },
     // { label: 'Ekstrakurikuller', to: `/mpk/clubs`, icon: <Users size={18} /> },
     {

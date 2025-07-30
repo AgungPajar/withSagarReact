@@ -185,8 +185,8 @@ export default function HomeStudent() {
                 alt={club.name}
                 className="w-full h-32 object-contain mb-4 rounded"
               />
-              <h3 className="text-md font-bold mb-1">{club.name}</h3>
-              <p className="text-sm text-gray-600 mb-4">{club.description || 'Belum ada deskripsi'}</p>
+              <h3 className="text-md font-bold mb-1 line-clamp-1">{club.name}</h3>
+              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{club.description || 'Belum ada deskripsi'}</p>
               {isEkskulOsis(club) ? (
                 <button
                   disabled

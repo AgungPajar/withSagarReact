@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Users,
   Edit3,
+  Calendar,
 } from 'lucide-react';
 
 const listVariants = {
@@ -72,6 +73,7 @@ export default function SidebarClub() {
     { label: 'Anggota', to: `/admin/${user?.id}/members`, icon: <Users size={18} /> },
     { label: 'TALK TO SAGAR', to: `/admin/ttsadmin`, icon: <MessageCircle size={18} /> },
     { label: 'Ekstrakurikuller', to: `/admin/clubs`, icon: <Users size={18} /> },
+    { label: 'Rekapitulasi', to: `/admin/activity-reports`, icon: <Calendar size={18} /> },
     {
       label: 'Siswa',
       icon: <GraduationCap size={18} />,

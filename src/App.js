@@ -12,6 +12,7 @@ import AttendancePage from './pages/club/AttendancePage';
 import MemberList from './pages/club/MemberList';
 import EditProfile from './pages/club/EditProfile';
 import RekapPage from './pages/club/Rekapitulasi';
+import RekapReportPage from './pages/club/RekapReport';
 import AddMemberPage from './pages/club/AddMemberPage';
 
 import StudentDashboard from './pages/student/HomeStudent';
@@ -32,6 +33,7 @@ import ClassXIStudent from './pages/admin/student/ClassXIStudent';
 import ClassXIIStudent from './pages/admin/student/ClassXIIStudent';
 import TTSAdmin from './pages/admin/TTSAdmin';
 import EditAdmin from './pages/admin/EditProfileadm';
+import ActivityAdmin from './pages/admin/ActivityReports';
 
 import DashboardMPK from './pages/mpk/DashboardMPK';
 import MemberListMPK from './pages/mpk/MemberListMPK';
@@ -40,6 +42,7 @@ import ClassXStudentmpk from './pages/mpk/studentmpk/ClassXStudent';
 import ClassXIStudentmpk from './pages/mpk/studentmpk/ClassXIStudent';
 import ClassXIIStudentmpk from './pages/mpk/studentmpk/ClassXIIStudent';
 import EditMPK from './pages/mpk/EditProfilempk';
+import ActivityMPK from './pages/mpk/ActivityReports';
 
 
 function App() {
@@ -78,6 +81,14 @@ function App() {
           element={
             <ProtectedRoute>
               <RekapPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/club/:clubId/rekap-report"
+          element={
+            <ProtectedRoute>
+              <RekapReportPage />
             </ProtectedRoute>
           }
         />
@@ -215,6 +226,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+      <Route
+          path="/admin/activity-reports"
+          element={
+            <ProtectedRoute>
+              <ActivityAdmin />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       <Routes> {/* MPK Routes */}
@@ -271,6 +290,14 @@ function App() {
         element={
           <ProtectedRoute>
             <EditMPK />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mpk/activity-reports"
+        element={
+          <ProtectedRoute>
+            <ActivityMPK />
           </ProtectedRoute>
         }
       />
