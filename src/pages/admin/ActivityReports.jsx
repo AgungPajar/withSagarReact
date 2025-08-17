@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import apiClient from "../../utils/axiosConfig";
-import SidebarAdmin from "../../components/SidebarAdmin"
+import apiClient from "@/utils/axiosConfig";
+import SidebarAdmin from "@/components/layouts/SidebarOsis"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -88,12 +88,14 @@ export default function AdminActivityReport() {
                 {filteredReports.map((report, index) => (
                   <tr key={report.id}>
                     <td className="px-4 py-2 text-center w-8">{index + 1}</td>
-                    <td className="px-4 py-2 w-10">
-                      <img
-                        src={report.photo_url}
-                        alt="Foto"
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                    <td className="px-4 py-2 w-14">
+                      <a href={report.photo_url} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={report.photo_url}
+                          alt={`Foto Laporan tanggal ${report.date}`}
+                          className="w-16 h-16 object-cover rounded hover:scale-105 transition duration-200"
+                        />
+                      </a>
                     </td>
                     <td className="px-4 py-2">{report.club?.name || "N/A"}</td>
                     <td className="px-4 py-2">{report.materi}</td>

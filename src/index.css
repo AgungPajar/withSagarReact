@@ -28,7 +28,7 @@ code {
   background-color: transparent;
 }
 
-.swal2-confirm,
+/* .swal2-confirm,
 .swal2-cancel,
 .swal2-deny {
   background-color: #5aa3e7 !important;
@@ -41,4 +41,57 @@ code {
 .swal2-cancel:hover,
 .swal2-deny:hover {
   filter: brightness(0.9);
+} */
+
+/* di file CSS global (misal index.css) */
+.my-confirm-btn {
+  background-color: white;
+  color: #16a34a; /* hijau Tailwind 600 */
+  border: 2px solid #16a34a;
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+.my-confirm-btn:hover {
+  background-color: #16a34a;
+  color: white;
+}
+
+.my-deny-btn {
+  background-color: white;
+  color: #d9cf3c; /* hijau Tailwind 600 */
+  border: 2px solid #16a34a;
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+.my-deny-btn:hover {
+  background-color: #d9cf3c;
+  color: white;
+}
+
+.my-deny-btn {
+  background-color: white;
+  color: #d9cf3c; /* hijau Tailwind 600 */
+  border: 2px solid #d9cf3c;
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+.my-deny-btn:hover {
+  background-color: #d9cf3c;
+  color: white;
+}
+
+.my-cancel-btn {
+  background-color: white;
+  color: #fc3131; /* hijau Tailwind 600 */
+  border: 2px solid #fc3131;
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+.my-cancel-btn:hover {
+  background-color: #fc3131;
+  color: white;
 }

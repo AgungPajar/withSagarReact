@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import SidebarMPK from '../../components/SidebarMPK';
-import apiClient from '../../utils/axiosConfig';
+import SidebarMPK from '@/components/layouts/SidebarMPK';
+import apiClient from '@/utils/axiosConfig';
 
 export default function DashboardMPK() {
   const [stats, setStats] = useState({

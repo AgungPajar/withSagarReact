@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../utils/axiosConfig';
 import {
-  AppBar,
-  Toolbar,
   IconButton,
   Table,
   TableHead,
@@ -12,16 +10,19 @@ import {
   TableBody,
   Button,
   Typography,
-  Paper
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import SidebarAdminMPK from '../../components/SidebarMPK';
+import CloseIcon from '@mui/icons-material/Close';
+import SidebarAdminMPK from '@/components/layouts/SidebarMPK';
 import Swal from 'sweetalert2';
 import { motion } from 'framer-motion';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import Footer from '../../components/Footer';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import Footer from '@/components/layouts/Footer';
 
 export default function MemberListMPK() {
   const { clubId } = useParams();
@@ -30,6 +31,8 @@ export default function MemberListMPK() {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchName, setSearchName] = useState('');
+  const [availableStudents, setAvailableStudents] = useState([]);
+  const [openAddDialog, setOpenAddDialog] = useState(false)
 
   const kelasOrder = { X: 1, XI: 2, XII: 3 };
 
@@ -44,6 +47,11 @@ export default function MemberListMPK() {
       if (rombelA !== rombelB) return rombelA - rombelB;
       return a.name.localeCompare(b.name);
     });
+
+  const filteredAvailableStudents = availableStudents.filter((siswa) =>
+    siswa.name.toLowerCase().includes(searchName.toLowerCase()) ||
+    siswa.nisn.includes(searchName)
+  );
 
   const handleSeleksi = async () => {
     if (pendingRequests.length === 0) {
@@ -97,12 +105,14 @@ export default function MemberListMPK() {
           btn.addEventListener('click', async () => {
             const id = btn.getAttribute('data-id');
             await updateStatus(id, 'accepted');
+            fetchData()
           });
         });
         swalEl.querySelectorAll('.btn-reject').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = btn.getAttribute('data-id');
             await updateStatus(id, 'rejected');
+            fetchData()
           });
         });
       }
@@ -145,6 +155,8 @@ export default function MemberListMPK() {
       setMembers(resMembers.data);
       const resRequests = await apiClient.get(`/clubs/${clubId}/requests`);
       setPendingRequests(resRequests.data);
+      const resAvailable = await apiClient.get(`/clubs/${clubId}/available-students`);
+      setAvailableStudents(resAvailable.data);
     } catch (error) {
       alert('Gagal memuat data ekskul: ' + error.message);
     } finally {
@@ -191,6 +203,34 @@ export default function MemberListMPK() {
     }
   };
 
+  const handleAddSiswa = async (studentId) => {
+    try {
+      await apiClient.post(`/clubs/${clubId}/add-student`, {
+        student_id: studentId,
+      });
+
+      Swal.fire({
+        toast: true,
+        icon: 'success',
+        title: 'Berhasil ditambahkan',
+        timer: 2000,
+        showConfirmButton: false,
+        position: 'top-end',
+      });
+
+      fetchData()
+      setOpenAddDialog(false);
+    } catch (err) {
+      Swal.fire({
+        toast: true,
+        icon: 'error',
+        title: 'Gagal menambahkan',
+        timer: 2000,
+        showConfirmButton: false,
+        position: 'top-end',
+      });
+    }
+  }
   return (
     <div>
       <div className="min-h-screen bg-white text-gray-800 p-4 pt-5">
@@ -215,7 +255,7 @@ export default function MemberListMPK() {
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                   />
-                  <Button disabled variant="contained" onClick={() => navigate(`/club/${clubId}/members/add`)}>
+                  <Button variant="contained" onClick={() => setOpenAddDialog(true)}>
                     + Add Anggota
                   </Button>
                   <Button variant="contained" color="secondary" onClick={handleSeleksi}>
@@ -256,6 +296,60 @@ export default function MemberListMPK() {
         </div>
       </div>
       <Footer />
+
+      <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Tambah Anggota Baru
+          <IconButton
+            aria-label='close'
+            onClick={() => setOpenAddDialog(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Cari Nama atau NISN"
+            variant='outlined'
+            size='small'
+            className='mb-3'
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+
+          <div className='space-y-2 max-h-[300px] overflow-y-auto'>
+            {filteredAvailableStudents.length === 0 ? (
+              <Typography variant='body2' color='textSecondary'>
+                Tidak ada siswa ditemukan
+              </Typography>
+            ) : (
+              filteredAvailableStudents.map((siswa) => (
+                <div key={siswa.id} className='flex justify-between items-center border rounded p-2'>
+                  <div className='flex gap-2'>
+                    <p className='font-medium'>
+                      {siswa.nisn}
+                    </p>
+                    <p className='font-medium'>
+                      {siswa.name}
+                    </p>
+                    <p>
+                      {siswa.class} {siswa.jurusan?.singkatan} {siswa.rombel}
+                    </p>
+                  </div>
+                  <Button variant='contained' size='small' onClick={() => handleAddSiswa(siswa.id)}>
+                    Tambah
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAddDialog(false)}>Tutup</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

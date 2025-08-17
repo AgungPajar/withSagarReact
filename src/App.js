@@ -2,27 +2,42 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Public
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import RegisterSiswaPage from './pages/RegisterPage';
+import PoresForm from './pages/public/PoresForm';
+import SuksesLomba from './pages/public/SuksesLomba';
+import DataAgustusan from './pages/public/DataAgustusan';
+import TTSForm from './pages/public/TTSForm';
+import AgustusanOverview from './pages/public/agustusan/Overview';
+import FutsalDaster from './pages/public/agustusan/matlom/Futsal';
+import Bakiak from './pages/public/agustusan/matlom/Bakiak';
+import BuntutNaga from './pages/public/agustusan/matlom/BuntutNaga';
+import PBBAB from './pages/public/agustusan/matlom/PBBAB';
+import Karung from './pages/public/agustusan/matlom/Karung';
+import Kelereng from './pages/public/agustusan/matlom/Kelereng';
+import Kerupuk from './pages/public/agustusan/matlom/Kerupuk';
+import TarikPA from './pages/public/agustusan/matlom/TarikPA';
+import TarikPI from './pages/public/agustusan/matlom/TarikPI';
 
+// Ekstrakurikuller
 import ClubDetail from './pages/club/ClubDetail';
-import ReportPage from './pages/club/ReportPage';
-import AttendancePage from './pages/club/AttendancePage';
-import MemberList from './pages/club/MemberList';
+import ReportGateway from './pages/club/Report/ReportGateway';
+import ReportPage from './pages/club/Report/ReportPage';
+import AttendancePage from './pages/club/Attendance/AttendancePage';
+import AttendanceGateaway from './pages/club/Attendance/AttendanceGateaway';
+import MemberList from './pages/club/Members/MemberList';
 import EditProfile from './pages/club/EditProfile';
-import RekapPage from './pages/club/Rekapitulasi';
-import RekapReportPage from './pages/club/RekapReport';
+import RecapAttendance from './pages/club/Recap/RecapAttendance';
+import RekapReportPage from './pages/club/Recap/RecapReport';
 import AddMemberPage from './pages/club/AddMemberPage';
 
+// Student
 import StudentDashboard from './pages/student/HomeStudent';
 import EditProfileStudent from './pages/student/EditProfileStudent';
 
-import PoresForm from './pages/public/PoresForm';
-import SuksesLomba from './pages/public/SuksesLomba';
-import DataPores from './pages/public/DataPoresPublic';
-import TTSForm from './pages/public/TTSForm';
-
+// Admin Or OSIS
 import AdminDashboard from './pages/admin/DashboardAdmin';
 import MemberListAdmin from './pages/admin/MemberListAdmin';
 import AdminClubs from './pages/admin/ClubsAdminPage';
@@ -35,6 +50,7 @@ import TTSAdmin from './pages/admin/TTSAdmin';
 import EditAdmin from './pages/admin/EditProfileadm';
 import ActivityAdmin from './pages/admin/ActivityReports';
 
+// MPK
 import DashboardMPK from './pages/mpk/DashboardMPK';
 import MemberListMPK from './pages/mpk/MemberListMPK';
 import TTSAdminMPK from './pages/mpk/TTSAdminMPK';
@@ -43,7 +59,6 @@ import ClassXIStudentmpk from './pages/mpk/studentmpk/ClassXIStudent';
 import ClassXIIStudentmpk from './pages/mpk/studentmpk/ClassXIIStudent';
 import EditMPK from './pages/mpk/EditProfilempk';
 import ActivityMPK from './pages/mpk/ActivityReports';
-
 
 function App() {
   return (
@@ -54,9 +69,19 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register-siswa" element={<RegisterSiswaPage />} />
         <Route path="/porest" element={<PoresForm />} />
-        <Route path="/data-pores" element={<DataPores />} />
+        <Route path="/data" element={<DataAgustusan />} />
         <Route path="/sukses" element={<SuksesLomba />} />
         <Route path="/ttsform" element={<TTSForm />} />
+        <Route path="/agustusan" element={<AgustusanOverview />} />
+        <Route path="/agustusan/fd" element={<FutsalDaster />} />
+        <Route path="/agustusan/bk" element={<Bakiak />} />
+        <Route path="/agustusan/bn" element={<BuntutNaga />} />
+        <Route path="/agustusan/pb" element={<PBBAB />} />
+        <Route path="/agustusan/ka" element={<Karung />} />
+        <Route path="/agustusan/ke" element={<Kelereng />} />
+        <Route path="/agustusan/kk" element={<Kerupuk />} />
+        <Route path="/agustusan/ta" element={<TarikPA />} />
+        <Route path="/agustusan/ti" element={<TarikPI />} />
       </Routes>
 
       <Routes> {/* Club Routes */}
@@ -77,15 +102,15 @@ function App() {
           }
         />
         <Route
-          path="/club/:clubId/rekap"
+          path="/club/:clubId/recap-attendance"
           element={
             <ProtectedRoute>
-              <RekapPage />
+              <RecapAttendance />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/club/:clubId/rekap-report"
+          path="/club/:clubId/recap-report"
           element={
             <ProtectedRoute>
               <RekapReportPage />
@@ -93,10 +118,26 @@ function App() {
           }
         />
         <Route
-          path="/attendance/:clubId/report"
+          path="/report/:clubId/gateaway"
+          element={
+            <ProtectedRoute>
+              <ReportGateway />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/report/:clubId/report"
           element={
             <ProtectedRoute>
               <ReportPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/attendance/:clubId/gateaway"
+          element={
+            <ProtectedRoute>
+              <AttendanceGateaway />
             </ProtectedRoute>
           }
         />

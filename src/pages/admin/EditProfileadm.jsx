@@ -7,9 +7,9 @@ import {
   Avatar,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import apiClient, { STORAGE_URL, getCsrfToken } from '../../utils/axiosConfig';
-import SidebarAdmin from '../../components/SidebarAdmin';
-import Footer from '../../components/Footer';
+import apiClient, { STORAGE_URL, getCsrfToken } from '@/utils/axiosConfig';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
+import Footer from '@/components/layouts/Footer';
 
 export default function EditAdminProfile() {
   const [name, setName] = useState('');

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import apiClient from "../../utils/axiosConfig";
-import SidebarAdmin from "../../components/SidebarMPK"
+import apiClient from "@/utils/axiosConfig";
+import SidebarAdmin from "@/components/layouts/SidebarMPK"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -20,14 +20,14 @@ export default function AdminActivityReport() {
 
     const filtered = allReports.filter((r) => r.date === formattedDate);
     setFilteredReports(filtered);
-  }, [allReports]); // jalan pas allReports ke-load
+  }, [allReports]);
 
 
   const fetchReports = async () => {
     try {
       const res = await apiClient.get("/admin/activity-reports");
       setAllReports(res.data.data);
-      setFilteredReports(res.data.data); // default: tampil semua
+      setFilteredReports(res.data.data); 
     } catch (err) {
       console.error("Gagal fetch laporan", err);
     } finally {
@@ -88,12 +88,14 @@ export default function AdminActivityReport() {
                 {filteredReports.map((report, index) => (
                   <tr key={report.id}>
                     <td className="px-4 py-2 text-center w-8">{index + 1}</td>
-                    <td className="px-4 py-2 w-10">
-                      <img
-                        src={report.photo_url}
-                        alt="Foto"
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                    <td className="px-4 py-2 w-14">
+                      <a href={report.photo_url} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={report.photo_url}
+                          alt={`Foto Laporan tanggal ${report.date}`}
+                          className="w-16 h-16 object-cover rounded hover:scale-105 transition duration-200"
+                        />
+                      </a>
                     </td>
                     <td className="px-4 py-2">{report.club?.name || "N/A"}</td>
                     <td className="px-4 py-2">{report.materi}</td>

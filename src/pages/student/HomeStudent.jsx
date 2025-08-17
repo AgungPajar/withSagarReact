@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
+import { handleUnauthorizedError } from '../../utils/errorHandler';
 import Swal from 'sweetalert2';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Menu, MenuItem, IconButton, Avatar } from '@mui/material';
@@ -9,8 +10,8 @@ import { FaCheckCircle, FaWhatsapp, FaClock } from 'react-icons/fa';
 import { Typewriter } from 'react-simple-typewriter';
 import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import Footer from '../../components/Footer';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import Footer from '@/components/layouts/Footer';
 
 
 export default function HomeStudent() {
@@ -71,10 +72,41 @@ export default function HomeStudent() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    navigate('/');
+  const handleLogout = async () => {
+    Swal.fire({
+      title: 'Logout?',
+      text: 'Pilih metode logout yang kamu mau',
+      icon: 'question',
+      showCancelButton: true,
+      showDenyButton: true,
+      confirmButtonText: 'Logout',
+      denyButtonText: 'Logout All Devices',
+      cancelButtonText: 'Batal',
+      customClass: {
+        confirmButton: 'my-confirm-btn',
+        denyButton: 'my-deny-btn',
+        cancelButton: 'my-cancel-btn'
+      }
+    }).then(async (result) => {
+      try {
+        if (result.isConfirmed) {
+          // Logout device ini aja
+          await apiClient.post('/logout');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          navigate('/');
+        } else if (result.isDenied) {
+          // Logout semua device
+          await apiClient.post('/logout?mode=all');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          navigate('/');
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'Gagal logout, coba lagi.', 'error');
+      }
+    });
   };
 
   useEffect(() => {
@@ -113,7 +145,11 @@ export default function HomeStudent() {
         setClubs(dashboardRes.data.clubs);
         setLoading(false);
       } catch (err) {
-        console.error('Gagal fetch data:', err);
+        const handled = await handleUnauthorizedError(err);
+        if (handled) {
+          return;
+        }
+      } finally {
         setLoading(false);
       }
     };

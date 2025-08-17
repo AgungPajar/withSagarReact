@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import apiClient from '../../utils/axiosConfig';
 import {
   Typography,
@@ -11,15 +12,16 @@ import {
   TableBody,
   Box,
   Container,
+  Button,
 } from '@mui/material';
 
-const DataPores = () => {
+const DataAgustusan = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
 
   const fetchData = async () => {
     try {
-      const res = await apiClient.get('/pendaftaran');
+      const res = await apiClient.get('/students/pendaftar-agustusan');
       setData(res.data);
     } catch (err) {
       console.error(err);
@@ -31,8 +33,31 @@ const DataPores = () => {
   }, []);
 
   const filtered = data.filter((item) =>
-    item.cabang_olahraga.toLowerCase().includes(search.toLowerCase())
+    item.cabang_lomba.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Fungsi buat nampilin SweetAlert list anggota
+  const showAnggota = (tim) => {
+    const anggotaList = tim.members
+      .map((m, i) => `${i + 1}. ${m.student?.name || '-'} - ${m.student?.kelas_lengkap || '-'}`)
+      .join('<br/>');
+
+    Swal.fire({
+      title: `Tim: ${tim.nama_tim || '-'}`,
+      html: `
+      <div style="text-align: left;">
+        <strong>Anggota:</strong><br/>
+        ${anggotaList || 'Tidak ada anggota'}
+      </div>
+    `,
+      icon: 'info',
+      confirmButtonText: 'Oke',
+      customClass: {
+        confirmButton: 'my-confirm-btn'
+      }
+    });
+  };
+
 
   return (
     <div
@@ -51,7 +76,7 @@ const DataPores = () => {
       <Container maxWidth="lg">
         <Paper sx={{ p: 3, backgroundColor: 'rgba(255, 255, 255, 0.95)' }}>
           <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
-            DATA PENDAFTARAN PORES 2025
+            DATA PENDAFTARAN AGUSTUSAN 2025
           </Typography>
 
           {/* Search dan total */}
@@ -63,9 +88,7 @@ const DataPores = () => {
               size="small"
               sx={{ width: '200px', mb: 1 }}
             />
-            <Typography variant="subtitle1">
-              Total Pendaftar: {filtered.length}
-            </Typography>
+            <Typography variant="subtitle1">Total Pendaftar: {filtered.length}</Typography>
           </Box>
 
           <Box sx={{ overflowX: 'auto' }}>
@@ -73,22 +96,35 @@ const DataPores = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>No</TableCell>
-                  <TableCell>Nama</TableCell>
-                  <TableCell>Kelas</TableCell>
-                  <TableCell>No_Hp</TableCell>
-                  <TableCell>MataLomba</TableCell>
                   <TableCell>Nama Tim</TableCell>
+                  <TableCell>Lihat Anggota</TableCell>
+                  <TableCell>Cabang Lomba</TableCell>
+                  <TableCell>Jurusan</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filtered.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{item.nama}</TableCell>
-                    <TableCell>{item.kelas}</TableCell>
-                    <TableCell>{item.nomor_hp}</TableCell>
-                    <TableCell>{item.cabang_olahraga}</TableCell>
                     <TableCell>{item.nama_tim || '-'}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => showAnggota(item)}
+                      >
+                        Lihat Anggota
+                      </Button>
+
+                    </TableCell>
+                    <TableCell>{item.cabang_lomba}</TableCell>
+                    <TableCell>
+                      {item.members && item.members[0]?.jurusan
+                        ? item.members[0].jurusan.nama
+                        : '-'}
+                    </TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
@@ -107,4 +143,4 @@ const DataPores = () => {
   );
 };
 
-export default DataPores;
+export default DataAgustusan;

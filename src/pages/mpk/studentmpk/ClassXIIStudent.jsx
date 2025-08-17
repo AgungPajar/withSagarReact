@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import apiClient from '../../../utils/axiosConfig';
+import apiClient from '@/utils/axiosConfig';
 import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import SidebarAdminMPK from '../../../components/SidebarMPK';
+import SidebarAdminMPK from '@/components/layouts/SidebarMPK';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import '../../../css/style.css';

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppBar,Toolbar, IconButton,InputAdornment, TextField, Button, Typography, Paper } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
+import apiClient, { STORAGE_URL } from '@/utils/axiosConfig';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 

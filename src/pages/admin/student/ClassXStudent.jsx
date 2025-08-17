@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import apiClient from '../../../utils/axiosConfig';
+import apiClient from '@/utils/axiosConfig';
+import { handleUnauthorizedError } from '@/utils/errorHandler';
 import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import SidebarAdmin from '../../../components/SidebarAdmin';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
 import Swal from 'sweetalert2';
 import '../../../css/style.css';
 
@@ -41,7 +42,10 @@ export default function DataKelasX() {
       });
       setStudents(res.data);
     } catch (err) {
-      console.error('Failed fetch students:', err);
+      const handled = await handleUnauthorizedError(err);
+        if (handled) {
+          return;
+        }
     } finally {
       setIsLoading(false);
     }
@@ -300,6 +304,7 @@ export default function DataKelasX() {
                 <th className="p-2 w-40 border-l border-r">NISN</th>
                 <th className="p-2 w-64 border-l border-r">Nama</th>
                 <th className="p-2 w-40 border-l border-r">Kelas</th>
+                <th className="p-2 w-40 border-l border-r">Phone</th>
                 <th className="p-2 w-40 border-l border-r">Ekskul</th>
               </tr>
             </thead>
@@ -334,6 +339,7 @@ export default function DataKelasX() {
                       <td className="p-2 w-40 border-l border-r">{s.nisn}</td>
                       <td className="p-2 w-64 border-l border-r">{s.name}</td>
                       <td className="p-2 w-40 border-l border-r">{s.class} {s.jurusan?.singkatan} {s.rombel}</td>
+                      <td className="p-2 w-64 border-l border-r">{s.phone}</td>
                       <td className="p-2 w-40 border-l border-r">
                         {s.clubs?.map((club) => club.name).join(', ') || '-'}
                       </td>

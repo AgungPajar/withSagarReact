@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import apiClient from '../../utils/axiosConfig';
-import SiderbarAdmin from '../../components/SidebarAdmin';
+import apiClient from '@/utils/axiosConfig';
+import SiderbarAdmin from '@/components/layouts/SidebarOsis';
 import Swal from 'sweetalert2';
 
 const AdminTTSList = () => {

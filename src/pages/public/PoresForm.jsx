@@ -48,13 +48,13 @@ const PorestForm = () => {
   return (
     <div className="min-h-screen bg-white px-4 py-6 flex flex-col items-center justify-center"
       style={{
-        backgroundImage: "url('lombabg.jpg')",  // Ganti dengan URL gambar kamu
+        backgroundImage: "url('lombabg.jpg')",
         filter: 'brightness(1)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: '#f5f5f5', // Fallback warna jika gambar gagal dimuat
-        backgroundAttachment: 'fixed', // Optional: agar efek parallax saat scroll
+        backgroundColor: '#f5f5f5',
+        backgroundAttachment: 'fixed',
       }}
     >
 
@@ -62,8 +62,8 @@ const PorestForm = () => {
         className="p-6 mt-10 w-full max-w-md"
         sx={{
           borderRadius: '20px',
-          border: '2px solid #90caf9', // Biru muda
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', // Box shadow hitam
+          border: '2px solid #90caf9',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -87,7 +87,7 @@ const PorestForm = () => {
 
         {/* Subjudul (Pendaftaran Lomba POREST 2025) */}
         <Typography variant="h6" align="center" gutterBottom>
-          Pendaftaran Lomba POREST 2025
+          Pendaftaran Lomba Agustusan 2025
           <br />
           (Pekan OLAHRAGA DAN ESPORT)
         </Typography>
@@ -137,7 +137,7 @@ const PorestForm = () => {
       }}>
 
         <Typography variant="h5" align="center" gutterBottom>
-          Form POREST
+          FORM FUTSAL PUTRA
         </Typography>
 
         <TextField

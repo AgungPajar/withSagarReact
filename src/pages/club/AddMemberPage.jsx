@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate, useParams } from 'react-router-dom';
-import apiClient from '../../utils/axiosConfig';
+import apiClient from '@/utils/axiosConfig';
 
 const kelasList = [
   'X AKL 1', 'X AKL 2', 'X AKL 3', 'X MPL 1', 'X MPL 2', 'X MPL 3',

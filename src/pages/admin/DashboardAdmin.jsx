@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import SidebarAdmin from '../../components/SidebarAdmin';
-import apiClient from '../../utils/axiosConfig';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
+import apiClient from '@/utils/axiosConfig';
+import { handleUnauthorizedError } from '@/utils/errorHandler';
 
 export default function DashboardAdmin() {
   const [stats, setStats] = useState({

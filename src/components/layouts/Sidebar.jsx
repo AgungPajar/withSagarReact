@@ -1,18 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Menu as MenuIcon, X as CloseIcon } from 'lucide-react';
-import { Box, Divider } from '@mui/material';
-import {
-  Home,
-  Users,
-  ClipboardList,
-  Edit3,
-  LogOut,
-  CalendarCheck,
-  ChevronDown,
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Menu as MenuIcon, X as CloseIcon, ChevronDown, LogOut } from 'lucide-react'
+import { Box, Divider } from '@mui/material'
 
+import { useLogout } from '@/hooks/useLogout'
 
 const listVariants = {
   hidden: {},
@@ -28,51 +20,50 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 },
 };
 
-export default function SidebarClub() {
-  const { clubId } = useParams();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [openSubmenu, setOpenSubmenu] = useState(null);
+export default function Sidebar({ role, title, menuItems }) {
+  const { id } = useParams()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [openSubmenu, setOpenSubmenu] = useState(null)
+  const logout =  useLogout()
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user'); // ini penting bro
-    navigate('/');
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    if (!user) {
+      alert('Silakan login terlebih dahulu')
+      return navigate('/')
+    }
+
+    if (user.role !== role) {
+      alert('Akses tidak diizinkan')
+      return navigate('/')
+    }
+
+    if (id && user.id.toString() !== id.toString()) {
+      alert('Akses tidak sesuai')
+      return navigate(`/${role === 'osis' ? 'admin' : role}/${user.id}/members`)
+    }
+  }, [id, navigate, role])
+
+  const isSubmenuActive = (submenu) => submenu?.some((sub) => location.pathname === sub.to)
+
+  const logoutMenuItem = {
+    label: 'Logout',
+    onClick: logout,
+    danger: true,
+    icon: <LogOut size={18} />,
   };
 
-  const isSubmenuActive = (submenu) => submenu?.some((sub) => location.pathname === sub.to);
-
-  const menuItems = [
-    { label: 'Home', to: `/club/${clubId}`, icon: <Home size={18} /> },
-    {
-      label: 'Report&Presensi',
-      icon: <CalendarCheck size={18} />,
-      submenu: [
-        { label: 'Report', to: `/attendance/${clubId}/report`, icon: <CalendarCheck size={18} /> },
-        { label: 'Presensi', to: `/attendance/${clubId}/attendance`, icon: <CalendarCheck size={18} /> },
-      ],
-    },
-    { label: 'Anggota', to: `/club/${clubId}/members`, icon: <Users size={18} /> },
-    {
-      label: 'Rekapitulasi',
-      icon: <ClipboardList size={18} />,
-      submenu: [
-        { label: 'Presensi', to: `/club/${clubId}/rekap`, icon: <ClipboardList size={18} /> },
-        { label: 'Report', to: `/club/${clubId}/rekap-report`, icon: <ClipboardList size={18} /> },
-      ],
-    },
-    { label: 'Edit Profile', to: `/profile/edit/${clubId}`, icon: <Edit3 size={18} /> },
-    { label: 'Logout', onClick: handleLogout, danger: true, icon: <LogOut size={18} /> },
-  ];
+  const allMenuItems = [...menuItems, logoutMenuItem];
 
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm fixed top-0 left-0 right-0 z-50">
+      <div className='md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm fixed top-0 left-0 right-0 z-50'>
         <Box display="flex" alignItems="center" className="gap-3 px-2">
           <img src="/smealogo.png" alt="Logo" className="w-10 h-10 object-contain" />
-          <h2 className="text-xl font-bold text-blue-600">E - OSSAGAR</h2>
+          <h2 className="text-xl font-bold text-blue-600">{title}</h2>
         </Box>
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="transition-all">
           <motion.div
@@ -89,13 +80,12 @@ export default function SidebarClub() {
         </button>
       </div>
 
-      {/* Overlay Drawer Mobile */}
       {sidebarOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          className=" fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         >
           <motion.div
@@ -118,9 +108,10 @@ export default function SidebarClub() {
               variants={listVariants}
               initial="hidden"
               animate="visible"
-            >
-              {menuItems.map((item, idx) => {
+              >
+              {allMenuItems.map((item, idx) => {
                 const isActive = location.pathname === item.to;
+
                 if (item.submenu) {
                   return (
                     <motion.li key={idx} variants={itemVariants}>
@@ -202,6 +193,7 @@ export default function SidebarClub() {
                   </motion.li>
                 );
               })}
+
             </motion.ul>
           </motion.div>
         </motion.div>
@@ -212,12 +204,14 @@ export default function SidebarClub() {
       <div className="hidden md:block w-64 h-screen bg-white border-r p-6 pt-10 fixed top-0 left-0">
         <Box display="flex" alignItems="center" className="mb-2 gap-3 px-2">
           <img src="/smealogo.png" alt="Logo" className="w-10 h-10 object-contain" />
-          <h2 className="text-xl font-bold text-blue-600">E - OSSAGAR</h2>
+          <h2 className="text-xl font-bold text-blue-600">SI-ADMIN</h2>
         </Box>
         <Divider sx={{ borderColor: '#97C1FF', marginBottom: '2vh' }} />
         <motion.ul className="space-y-4" variants={listVariants} initial="hidden" animate="visible">
-          {menuItems.map((item, idx) => {
+          {allMenuItems.map((item, idx) => {
             const isActive = location.pathname === item.to;
+
+            // ✅ Jika ada submenu
             if (item.submenu) {
               return (
                 <motion.li key={idx} variants={itemVariants}>
@@ -265,11 +259,13 @@ export default function SidebarClub() {
               );
             }
 
+            // 🧍‍♂️ Menu biasa
             return (
               <motion.li key={idx} variants={itemVariants}>
                 {item.to ? (
                   <Link
                     to={item.to}
+                    onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-2 px-4 py-2 rounded transition ${item.danger
                       ? 'text-red-500 hover:text-red-700'
                       : isActive
@@ -282,7 +278,10 @@ export default function SidebarClub() {
                   </Link>
                 ) : (
                   <button
-                    onClick={item.onClick}
+                    onClick={() => {
+                      item.onClick?.();
+                      setSidebarOpen(false);
+                    }}
                     className={`flex items-center gap-2 px-4 py-2 rounded w-full text-left transition ${item.danger
                       ? 'text-red-500 hover:text-red-700'
                       : 'text-gray-800 hover:text-blue-500'
@@ -297,6 +296,7 @@ export default function SidebarClub() {
           })}
         </motion.ul>
       </div>
+
     </>
-  );
+  )
 }

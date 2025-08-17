@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Box, Link } from '@mui/material';
+import { GlobalStyles, AppBar, Toolbar, Typography, Box, Link } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EkskulSlider from '../components/EkskulSliderHome';
@@ -7,42 +7,68 @@ import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
 
 export default function Dashboard() {
-  const { clubId } = useParams();
-  const { studentId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const users = JSON.parse(localStorage.getItem('user'));
-  const studentHashId = users?.student_hash_id;
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    setUser(storedUser);
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+    setUser(savedUser);
+    setLoading(false)
 
-    Swal.fire({
-      title: 'OSSAGAR 59',
-      text: 'guys maaf yaa karena ini masih tahap develop, kalau ada error kalian logout dulu terus refresh terus login lagi. Thanks GUYS',
-      icon: 'info',
-      confirmButtonText: 'Lanjutkan...',
-      confirmButtonColor: '#5aa1e4',
-      background: '#fff',
-      color: '#333',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      allowEnterKey: false,
-    });
+    const hasSeenALert = sessionStorage.getItem('infoAlertSeen')
+    if (!hasSeenALert) {
+      Swal.fire({
+        title: 'OSSAGAR 59',
+        text: 'guys maaf yaa karena ini masih tahap develop, kalau ada error kalian logout dulu terus refresh terus login lagi. Thanks GUYS',
+        icon: 'info',
+        confirmButtonText: 'Lanjutkan...',
+        background: '#fff',
+        color: '#333',
+        customClass: {
+          confirmButton: 'my-confirm-btn',
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+      });
+      sessionStorage.setItem('infoAlertSeen', 'true')
+    }
   }, []);
-  
+
+  const clubId = user?.club_hash_id;
+  const studentHashId = user?.student_hash_id;
+
+  const inputGlobalStyles = (
+    <GlobalStyles
+      styles={{
+        body: {
+          backgroundColor: '#f0f2f5', // Warna dasar paling luar
+        },
+        '#root::before': {
+          content: '""',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'radial-gradient(ellipse at center, white 40%, transparent 80%)',
+          zIndex: -1,
+        },
+      }}
+    />
+  );
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: 'white',
+        bgcolor: 'transparent',
         overflowX: 'hidden',
       }}
     >
-      {loading && <LoadingSpinner />} 
+      {loading && <LoadingSpinner />}
+
 
       {/* Navbar */}
       <AppBar
@@ -99,23 +125,69 @@ export default function Dashboard() {
         </Toolbar>
       </AppBar>
 
+      <Box sx={(theme) => ({
+        minHeight: '74vh',
+        width: '100%',
+        maxWidth: '90vw',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        position: 'relative',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: '16px',
+        margin: '0 auto 2rem auto', 
+        padding: { xs: '0 1rem', md: '0 2rem' },
+        transition: 'background-image 1s ease-in-out',
+        color: 'white',
+        textShadow: '3px 3px 2px rgb(210, 227, 250)',
 
+        '@keyframes verticalSlider': {
+          '0%, 45%': {
+            backgroundImage: 'url(/assets/bg/vertical1.jpeg)',
+          },
+          '50%, 95%': {
+            backgroundImage: 'url(/assets/bg/vertical2.jpeg)',
+          },
+          '100%': {
+            backgroundImage: 'url(/assets/bg/vertical1.jpeg)',
+          },
+        },
+        '@keyframes horizontalSlider': {
+          '0%, 45%': {
+            backgroundImage: 'url(/assets/bg/horizontal1.png)',
+          },
+          '50%, 95%': {
+            backgroundImage: 'url(/assets/bg/horizontal2.png)',
+          },
+          '100%': {
+            backgroundImage: 'url(/assets/bg/horizontal1.png)',
+          },
+        },
 
-      {/* Header Text */}
-      <Box sx={{ bgcolor: '#ffffff', py: 4, textAlign: 'center' }}>
+        maskImage: 'radial-gradient(ellipse 80% 100% at center, white 60%, transparent)',
+        maskSize: '100% 100%',
+        maskRepeat: 'no-repeat',
+
+        animation: 'verticalSlider 10s infinite',
+        [theme.breakpoints.up('md')]: {
+          animation: 'horizontalSlider 10s infinite',
+        },
+      })}>
+
         <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
           ORGANISASI <br /> & <br /> EKSTRAKURIKULER <br />
           <span style={{ color: '#333' }}>SMK NEGERI 1 GARUT</span>
         </Typography>
-        <Typography variant="subtitle1" color="textSecondary" translate="no">
+        <Typography variant="h6" color="textSecondary" translate="no">
           HIJI HATE, HIJI HARTI, NGAHIJI NGABAKTI
         </Typography>
       </Box>
 
-      {/* Slider Ekskul */}
       <EkskulSlider onLoadFinish={() => setLoading(false)} />
 
-      {/* Footer */}
       <Box
         component="footer"
         sx={{
@@ -128,14 +200,14 @@ export default function Dashboard() {
       >
         © 2025 OSIS SMK NEGERI 1 GARUT
       </Box>
-      {/* <a
+      <a
         href="/ttsform"
-        className="fixed bottom-2 right-8 z-[9999] cursor-pointer"
+        className="fixed bottom-1 right-8 z-[9999] cursor-pointer"
       >
         <motion.img
           src="/ttslogo.png"
           alt="TTS"
-          className="w-40 h-40 object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
+          className="w-[6rem] h-[6rem] object-contain hover:scale-110 transition-transform duration-300 drop-shadow-xl"
           animate={{ y: [60, -60, 60] }}
           transition={{
             duration: 1,
@@ -143,7 +215,7 @@ export default function Dashboard() {
             ease: 'easeInOut',
           }}
         />
-      </a> */}
+      </a>
 
     </Box >
   );

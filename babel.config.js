@@ -11,6 +11,19 @@ module.exports = {
         useBuiltIns: 'usage',
         corejs: 3
       }
-    ]
-  ]
+    ],
+    '@babel/preset-react'
+  ],
+
+  plugins: [
+    [
+      'module-resolver',
+      {
+        root: ['/src'],
+        alias: {
+          '@': '/src',
+        },
+      },
+    ],
+  ],
 };

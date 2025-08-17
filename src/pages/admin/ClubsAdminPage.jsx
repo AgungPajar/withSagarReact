@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
-import SidebarAdmin from '../../components/SidebarAdmin';
+import apiClient, { STORAGE_URL } from '@/utils/axiosConfig';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
 
 export default function ClubsAdminPage() {
   const navigate = useNavigate();

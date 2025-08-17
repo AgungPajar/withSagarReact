@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import apiClient from '../../utils/axiosConfig';
+import apiClient from '@/utils/axiosConfig';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import {Button} from '@mui/material';
 
 const EditProfileStudent = () => {

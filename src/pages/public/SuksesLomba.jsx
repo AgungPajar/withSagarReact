@@ -57,9 +57,9 @@ export default function RegisterPage() {
 
         {/* Subjudul (Pendaftaran Lomba POREST 2025) */}
         <Typography variant="h6" align="center" gutterBottom>
-          Pendaftaran Lomba PORES 2025
+          Pendaftaran Lomba Agustusan 2025
           <br />
-          (Pekan OLAHRAGA DARI EKSTRAKURIKULER)
+          (AGUSTUSAN SMK NEGERI 1 GARUT)
         </Typography>
 
         {/* Batas Akhir Pendaftaran */}
@@ -68,93 +68,8 @@ export default function RegisterPage() {
         </Typography>
 
         <Typography variant="body1" align="start" sx={{ mt: 2 }}>
-          Silakan Masuk Grup
+          Silakan Lanjutkan....
           <br />
-          Sesuai Lomba yang Dipilih : 
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://chat.whatsapp.com/KSbiaCbtwZvLMYSOfayZOr"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              textTransform: 'none',
-              backgroundColor: '#737791',
-              '&:hover': {
-                backgroundColor: '#62688f',
-              },
-              borderRadius: '20px',
-              border: '2px solid #fff',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              mt: 2
-            }}
-            fullWidth
-          >
-            Grup Futsal Putra
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://chat.whatsapp.com/JNiyzpzl0SICrDY4m8LLyz"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              textTransform: 'none',
-              backgroundColor: '#737791',
-              '&:hover': {
-                backgroundColor: '#62688f',
-              },
-              borderRadius: '20px',
-              border: '2px solid #fff',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              mt: 2
-            }}
-            fullWidth
-          >
-            Grup Badminton
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://chat.whatsapp.com/BnIfh8OWk0S43LisDlhTpR"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              textTransform: 'none',
-              backgroundColor: '#737791',
-              '&:hover': {
-                backgroundColor: '#62688f',
-              },
-              borderRadius: '20px',
-              border: '2px solid #fff',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              mt: 2
-            }}
-            fullWidth
-          >
-            Catur
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://chat.whatsapp.com/GV3iubhtQ5U8uhJ8SKSUVm"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              textTransform: 'none',
-              backgroundColor: '#737791',
-              '&:hover': {
-                backgroundColor: '#62688f',
-              },
-              borderRadius: '20px',
-              border: '2px solid #fff',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              mt: 2
-            }}
-            fullWidth
-          >
-            Tarik Tambang
-          </Button>
 
           <Button
             variant="contained"
@@ -170,7 +85,7 @@ export default function RegisterPage() {
               mb: 2
             }}
           >
-            Kembali
+            Lanjutkan
           </Button>
         </Typography>
       </Paper>

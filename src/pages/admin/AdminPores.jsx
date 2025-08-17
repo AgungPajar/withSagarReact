@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import apiClient from '../../utils/axiosConfig';
+import apiClient from '@/utils/axiosConfig';
 import { Typography, TextField, Paper, Table, TableRow, TableHead, TableCell, TableBody, Button } from '@mui/material';
-import SidebarAdmin from '../../components/SidebarAdmin';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
 
 
 const AdminPores = () => {
