@@ -64,7 +64,7 @@ export default function AttendancePage() {
                   {students.map((student, i) => (
                     <TableRow key={student.id} hover>
                       <TableCell>{i + 1}</TableCell>
-                      <TableCell>{student.name}</TableCell>
+                      <TableCell className='line-clamp-2'>{student.name}</TableCell>
                       <TableCell>{`${student.class} ${student.jurusan_singkatan} ${student.rombel}`}</TableCell>
                       <TableCell>
                         <Select

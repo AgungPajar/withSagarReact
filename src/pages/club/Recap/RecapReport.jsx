@@ -35,7 +35,7 @@ export default function RecapReportPage() {
         <motion.main
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`flex-1 p-6 transition-all duration-300 mt-20 sm:mt-2 ${isExpanded ? 'md:ml-4' : 'md:ml-8'}`}
+          className={`flex-1 p-6 transition-all duration-300 mt-20 sm:mt-2 ${isExpanded ? 'md:ml-[17vw]' : 'md:ml-[7vw]'}`}
         >
           {loading ? (
             <div className="flex justify-center items-center h-full"><LoadingSpinner /></div>

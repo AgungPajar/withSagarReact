@@ -49,7 +49,7 @@ export default function MemberList() {
         <motion.main
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`flex-1 p-4 sm:p-6 transition-all duration-300 mt-20 sm:mt-2 ${isExpanded ? 'md:ml-4' : 'md:ml-8'}`}
+          className={`flex-1 p-4 sm:p-6 transition-all duration-300 mt-20 sm:mt-2 ${isExpanded ? 'md:ml-[17vw]' : 'md:ml-[7vw]'}`}
         >
           <Paper className="p-4 sm:p-6 rounded-xl shadow-lg w-full">
             <Typography variant="h5" className="font-bold text-center pb-10">Daftar Anggota Ekskul</Typography>

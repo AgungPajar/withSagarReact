@@ -42,7 +42,7 @@ export default function ReportPage() {
       >
         <div className="w-full" style={{ maxWidth: 500 }}>
           <button
-            onClick={() => navigate(-1)} // <-- Aksi buat kembali
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-gray-600 hover:text-black font-semibold mb-6 transition-colors"
           >
             <ArrowLeft size={18} />
@@ -63,7 +63,7 @@ export default function ReportPage() {
               <DatePicker
                 label="Tanggal Kegiatan"
                 value={tanggal}
-                readOnly
+                // readOnly
                 format="DD MMMM YYYY"
                 slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
               />

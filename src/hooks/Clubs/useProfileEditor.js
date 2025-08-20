@@ -100,7 +100,7 @@ export const useProfileEditor = (clubId) => {
       showCancelButton: true,
       confirmButtonText: 'Simpan',
       cancelButtonText: 'Batal',
-      reverseButtons: true, // bikin simpan di kanan
+      reverseButtons: true, 
       preConfirm: () => {
         const oldPassword = document.getElementById('oldPassword').value;
         const newPassword = document.getElementById('newPassword').value;

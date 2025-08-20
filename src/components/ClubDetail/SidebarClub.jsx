@@ -225,8 +225,8 @@ export default function SidebarClub({ isExpanded, setIsExpanded }) {
         transition={{ type: 'spring', stiffness: 500, damping: 40 }}
         className={`
           hidden md:flex flex-col
-          h-auto max-h-[90vh] bg-white border rounded-2xl shadow-lg 
-          fixed top-4 left-4 relative
+          h-full max-h-[90vh] bg-white border rounded-2xl shadow-lg 
+          fixed top-4 left-4
           ${isExpanded ? 'w-64 p-4' : 'w-20 p-3'}
         `}>
         {/* Tombol Toggle tidak ada perubahan */}

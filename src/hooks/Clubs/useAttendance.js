@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import Swal from 'sweetalert2'
@@ -24,20 +24,22 @@ export const useAttendance = (clubId) => {
           apiClient.get(`/clubs/${clubId}`),
           apiClient.get(`/clubs/${clubId}/members`)
         ]);
-        
+
         setClub(clubRes.data);
 
-        const kelasOrder = {X: 1, XI: 2, XII: 3};
-        const sortedStudents = studentsRes.data 
-          .map(s => ({...s, status: 'hadir'}))
+        const kelasOrder = { X: 1, XI: 2, XII: 3 };
+        const sortedStudents = studentsRes.data
+          .map(s => ({ ...s, status: 'hadir' }))
           .sort((a, b) => {
-            const kelasA = kelasOrder(a.kelas) || 99;
+            const kelasA = kelasOrder[a.kelas] || 99;
             const kelasB = kelasOrder[b.class] || 99;
             if (kelasA !== kelasB) return kelasA - kelasB;
 
             const rombelA = parseInt(a.rombel) || 0;
             const rombelB = parseInt(b.rombel) || 0;
-            return a.name.localCompare(b.name)
+            if (rombelA !== rombelB) return rombelA - rombelB;
+
+            return a.name.localeCompare(b.name);
           });
         setStudents(sortedStudents);
       } catch (error) {
@@ -51,9 +53,9 @@ export const useAttendance = (clubId) => {
   }, [clubId]);
 
   const handleStatusChange = (studentId, newStatus) => {
-    setStudents(prevStudents => 
+    setStudents(prevStudents =>
       prevStudents.map(student =>
-        student.id === studentId ? {...student, status: newStatus} : student
+        student.id === studentId ? { ...student, status: newStatus } : student
       )
     );
   };
@@ -67,13 +69,13 @@ export const useAttendance = (clubId) => {
         status: student.status,
         date: tanggal.format('YYYY-MM-DD'),
       }));
-      await apiClient.post('/attendances', {data: attendanceData});
+      await apiClient.post('/attendances', { data: attendanceData });
       Swal.fire({
         toast: true,
         icon: 'success',
         title: 'Presensi berhasil dikirim!',
         position: 'top-end',
-        showConfirmButton: false, 
+        showConfirmButton: false,
         timer: 2000
       });
       navigate(`/club/${clubId}`);
@@ -84,7 +86,7 @@ export const useAttendance = (clubId) => {
         icon: 'error',
         title: 'Gagal mengirim presensi!',
         position: 'top-end',
-        showConfirmButton: false, 
+        showConfirmButton: false,
         timer: 2000
       });
     } finally {

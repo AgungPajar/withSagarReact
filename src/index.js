@@ -19,7 +19,7 @@ const promptUserToUpdate = (registration) => {
       title: 'Update E - OSSAGAR',
       text: "Versi baru dari web ini tersedia, update sekarang!",
       icon: 'info',
-      confirmButtonText: 'Update',
+      confirmButtonText: 'Lanjutkan',
       timer: 4000,
       timerProgressBar: true,
       allowOutsideClick: false,
@@ -34,7 +34,9 @@ const promptUserToUpdate = (registration) => {
 
       Swal.fire({
         title: 'Updating...',
-        text: 'Proses update, sabar ya guys...',
+        text: 'Proses update, Ditunggu ya guys...',
+        timer: 2000,
+        timerProgressBar: true,
         didOpen: () => {
           Swal.showLoading();
         },

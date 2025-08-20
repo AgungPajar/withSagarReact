@@ -11,30 +11,30 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    setUser(savedUser);
-    setLoading(false)
+  // useEffect(() => {
+  //   const savedUser = JSON.parse(localStorage.getItem('user'));
+  //   setUser(savedUser);
+  //   setLoading(false)
 
-    const hasSeenALert = sessionStorage.getItem('infoAlertSeen')
-    if (!hasSeenALert) {
-      Swal.fire({
-        title: 'OSSAGAR 59',
-        text: 'guys maaf yaa karena ini masih tahap develop, kalau ada error kalian logout dulu terus refresh terus login lagi. Thanks GUYS',
-        icon: 'info',
-        confirmButtonText: 'Lanjutkan...',
-        background: '#fff',
-        color: '#333',
-        customClass: {
-          confirmButton: 'my-confirm-btn',
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-      });
-      sessionStorage.setItem('infoAlertSeen', 'true')
-    }
-  }, []);
+  //   const hasSeenALert = sessionStorage.getItem('infoAlertSeen')
+  //   if (!hasSeenALert) {
+  //     Swal.fire({
+  //       title: 'OSSAGAR 59',
+  //       text: 'guys maaf yaa karena ini masih tahap develop, kalau ada error kalian logout dulu terus refresh terus login lagi. Thanks GUYS',
+  //       icon: 'info',
+  //       confirmButtonText: 'Lanjutkan...',
+  //       background: '#fff',
+  //       color: '#333',
+  //       customClass: {
+  //         confirmButton: 'my-confirm-btn',
+  //       },
+  //       allowOutsideClick: false,
+  //       allowEscapeKey: false,
+  //       allowEnterKey: false,
+  //     });
+  //     sessionStorage.setItem('infoAlertSeen', 'true')
+  //   }
+  // }, []);
 
   const clubId = user?.club_hash_id;
   const studentHashId = user?.student_hash_id;
