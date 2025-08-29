@@ -5,7 +5,7 @@ import { getOsisMenuItems } from '../Config/SidebarConfig'
 import apiClient from '@/utils/axiosConfig'
 import Swal from 'sweetalert2'
 
-export default function SidebarOsis()  {
+export default function SidebarOsis({ isExpanded, setIsExpanded })  {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -16,6 +16,8 @@ export default function SidebarOsis()  {
       role="osis"
       title="OSIS ADMIN"
       menuItems={menuItems}
+      isExpanded={isExpanded} 
+      setIsExpanded={setIsExpanded}
     />
   )
 }

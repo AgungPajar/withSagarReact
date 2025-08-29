@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Menu as MenuIcon, X as CloseIcon, ChevronDown, LogOut } from 'lucide-react'
+import { Menu as MenuIcon, X as CloseIcon, ChevronDown, LogOut, ChevronLeft } from 'lucide-react'
 import { Box, Divider } from '@mui/material'
 
 import { useLogout } from '@/hooks/useLogout'
@@ -20,16 +20,20 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 },
 };
 
-export default function Sidebar({ role, title, menuItems }) {
+export default function Sidebar({ role, title, menuItems, isExpanded, setIsExpanded }) {
   const { id } = useParams()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const [openSubmenu, setOpenSubmenu] = useState(null)
-  const logout =  useLogout()
+  const logout = useLogout()
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'))
+
+    if (!isExpanded) {
+      setOpenSubmenu(null);
+    }
 
     if (!user) {
       alert('Silakan login terlebih dahulu')
@@ -48,6 +52,15 @@ export default function Sidebar({ role, title, menuItems }) {
   }, [id, navigate, role])
 
   const isSubmenuActive = (submenu) => submenu?.some((sub) => location.pathname === sub.to)
+
+  const handleSubmenuClick = (item) => {
+    if (isExpanded) {
+      setOpenSubmenu(openSubmenu === item.label ? null : item.label);
+    } else {
+      setIsExpanded(true);
+      setOpenSubmenu(item.label);
+    }
+  };
 
   const logoutMenuItem = {
     label: 'Logout',
@@ -108,7 +121,7 @@ export default function Sidebar({ role, title, menuItems }) {
               variants={listVariants}
               initial="hidden"
               animate="visible"
-              >
+            >
               {allMenuItems.map((item, idx) => {
                 const isActive = location.pathname === item.to;
 
@@ -201,42 +214,55 @@ export default function Sidebar({ role, title, menuItems }) {
 
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-64 h-screen bg-white border-r p-6 pt-10 fixed top-0 left-0">
+      <div className={`hidden md:block h-screen bg-white border-r p-4 pt-8 fixed top-0 left-0 transition-all duration-300 ${isExpanded ? 'w-64' : 'w-30'}`}>
+
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="absolute -right-3 top-9 bg-white border-2 border-blue-500 text-blue-500 rounded-full p-1 z-10 hover:bg-blue-50"
+        >
+          <motion.div animate={{ rotate: isExpanded ? 0 : 180 }}>
+            <ChevronLeft size={16} />
+          </motion.div>
+        </button>
+
         <Box display="flex" alignItems="center" className="mb-2 gap-3 px-2">
           <img src="/smealogo.png" alt="Logo" className="w-10 h-10 object-contain" />
-          <h2 className="text-xl font-bold text-blue-600">SI-ADMIN</h2>
+          {isExpanded && <h2 className="text-xl font-bold text-blue-600 whitespace-nowrap">SI-ADMIN</h2>}
         </Box>
+
         <Divider sx={{ borderColor: '#97C1FF', marginBottom: '2vh' }} />
+
         <motion.ul className="space-y-4" variants={listVariants} initial="hidden" animate="visible">
           {allMenuItems.map((item, idx) => {
             const isActive = location.pathname === item.to;
+            const isSubmenuReallyActive = isSubmenuActive(item.submenu);
 
-            // ✅ Jika ada submenu
             if (item.submenu) {
               return (
+
                 <motion.li key={idx} variants={itemVariants}>
+
                   <button
-                    onClick={() =>
-                      setOpenSubmenu(openSubmenu === item.label ? null : item.label)
-                    }
+                    onClick={() => handleSubmenuClick(item)}
                     className={`flex items-center justify-between w-full px-4 py-2 rounded transition ${isSubmenuActive(item.submenu)
                       ? 'bg-blue-500 text-white font-semibold'
                       : 'text-gray-800 hover:text-blue-500'
-                      }`}
-                  >
+                      }`}>
+
                     <span className="flex items-center gap-2">
                       {item.icon}
-                      {item.label}
+                      {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                     </span>
+
                     <motion.div
-                      initial={false}
-                      animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                      animate={{ rotate: openSubmenu === item.label && isExpanded ? 180 : 0 }}
                     >
                       <ChevronDown size={16} />
                     </motion.div>
+
                   </button>
-                  {openSubmenu === item.label && (
+
+                  {isExpanded && openSubmenu === item.label && (
                     <motion.ul
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
@@ -259,7 +285,6 @@ export default function Sidebar({ role, title, menuItems }) {
               );
             }
 
-            // 🧍‍♂️ Menu biasa
             return (
               <motion.li key={idx} variants={itemVariants}>
                 {item.to ? (
@@ -274,7 +299,7 @@ export default function Sidebar({ role, title, menuItems }) {
                       }`}
                   >
                     {item.icon}
-                    {item.label}
+                    {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                   </Link>
                 ) : (
                   <button
@@ -288,7 +313,7 @@ export default function Sidebar({ role, title, menuItems }) {
                       }`}
                   >
                     {item.icon}
-                    {item.label}
+                    {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                   </button>
                 )}
               </motion.li>

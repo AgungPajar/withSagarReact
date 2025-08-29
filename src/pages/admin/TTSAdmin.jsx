@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import apiClient from '@/utils/axiosConfig';
-import SiderbarAdmin from '@/components/layouts/SidebarOsis';
+import SidebarAdmin from '@/components/layouts/SidebarOsis';
 import Swal from 'sweetalert2';
 
 const AdminTTSList = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -119,8 +120,8 @@ const AdminTTSList = () => {
 
   return (
     <div className="min-h-screen bg-white flex font-poppins">
-      <SiderbarAdmin />
-      <main className="flex-1 p-4 pt-24 md:pt-16 md:ml-64 w-full">
+      <SidebarAdmin isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
+      <main className={`flex-1 p-4 pt-24 md:pt-16 w-full ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-28'}`}>
         <h1 className="text-2xl font-bold mb-6">TALK TO SAGAR</h1>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded mb-4"

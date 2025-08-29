@@ -10,20 +10,16 @@ export default function useStudentData(classLevel) {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isInitialDataLoading, setInitialDataLoading] = useState(true);
+
+  const [clubs, setClubs] = useState([]);
+  const [selectedClubs, setSelectedClubs] = useState([])
+  const [isFilterModalOpen, setFilterModalOpen] = useState(false)
 
   const promotionOptions = {
     X: { XI: 'Naik ke Kelas XI' },
     XI: { XII: 'Naik ke Kelas XII' },
     XII: { Lulus: 'Luluskan Siswa' },
-  };
-
-  const fetchJurusans = async () => {
-    try {
-      const res = await apiClient.get('/admin/jurusans');
-      setJurusans(res.data);
-    } catch (error) {
-      console.error('Failed fetch jurusans', error);
-    };
   };
 
   const fetchStudents = async () => {
@@ -45,7 +41,22 @@ export default function useStudentData(classLevel) {
   };
 
   useEffect(() => {
-    fetchJurusans();
+    const fetchInitialData = async () => {
+      setInitialDataLoading(true);
+      try {
+        const [jurusansRes, clubsRes] = await Promise.all([
+          apiClient.get('/admin/jurusans'),
+          apiClient.get('/clubs')
+        ]);
+        setJurusans(jurusansRes.data);
+        setClubs(clubsRes.data);
+      } catch (error) {
+        console.error("Failed to fetch initial data", error);
+      } finally {
+        setInitialDataLoading(false);
+      }
+    }
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -106,7 +117,11 @@ export default function useStudentData(classLevel) {
         if (err.response?.data?.message?.includes('Duplicate entry')) {
           const match = err.response.data.message.match(/Duplicate entry '(\d+)'/);
           const nisn = match ? match[1] : 'tertentu';
-          Swal.fire('Gagal', 'Terjadi kesalahan upload error program', 'error');
+          Swal.fire(
+            'Gagal Upload',
+            `Data siswa dengan NISN ${nisn} sudah terdaftar.`,
+            'error'
+          );
         }
       }
     };
@@ -150,6 +165,8 @@ export default function useStudentData(classLevel) {
           data: { ids: selectedStudents },
         });
         Swal.fire('Sukses', 'Siswa berhasil dihapus', 'success')
+        fetchStudents();
+        setSelectedStudents();
       } catch (err) {
         console.error(err)
         Swal.fire('Gagal', 'Terjadi Kesalahan', 'error')
@@ -179,7 +196,7 @@ export default function useStudentData(classLevel) {
         const targetClass = result.value;
         const action = targetClass === 'Lulus' ? 'Meluluskan' : 'Menaikan';
         try {
-          await apiClient.ppost('/admin/students/naik-kelas', {
+          await apiClient.post('/admin/students/naik-kelas', {
             ids: selectedStudents,
             class: targetClass,
           });
@@ -198,6 +215,7 @@ export default function useStudentData(classLevel) {
     jurusans,
     selectedJurusan,
     selectedStudents,
+    setSelectedJurusan,
     isLoading,
     searchQuery,
     setSearchQuery,
@@ -206,6 +224,13 @@ export default function useStudentData(classLevel) {
     handleInsertData,
     handleDeleteSelected,
     handleNaikKelas,
+
+    clubs,
+    selectedClubs,
+    setSelectedClubs,
+    isFilterModalOpen,
+    setFilterModalOpen,
+    isInitialDataLoading,
   }
 
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import apiClient from "@/utils/axiosConfig";
-import SidebarAdmin from "@/components/layouts/SidebarMPK"
+import SidebarAdmin from "@/components/layouts/SidebarMpk"
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'

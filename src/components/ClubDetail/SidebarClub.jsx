@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu as MenuIcon, X as CloseIcon } from 'lucide-react';
 import { Box, Divider } from '@mui/material';
@@ -14,9 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import Swal from 'sweetalert2';
 
-import apiClient from '@/utils/axiosConfig.js';
 import { useLogout } from '@/hooks/useLogout';
 
 const listVariants = {
@@ -52,7 +50,7 @@ const getMenuItems = (clubId) => [
       { label: 'Report', to: `/club/${clubId}/recap-report`, icon: <ClipboardList size={18} /> },
     ],
   },
-  { label: 'Edit Profile', to: `/profile/edit/${clubId}`, icon: <Edit3 size={18} /> },
+  { label: 'Edit Profile', to: `/club/${clubId}/profile`, icon: <Edit3 size={18} /> },
 ];
 
 const MenuContent = ({ isExpanded, menuItems, location, openSubmenu, setOpenSubmenu, onLinkClick }) => {
@@ -137,7 +135,6 @@ const MenuContent = ({ isExpanded, menuItems, location, openSubmenu, setOpenSubm
 export default function SidebarClub({ isExpanded, setIsExpanded }) {
   const { clubId } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const logout = useLogout();

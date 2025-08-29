@@ -7,14 +7,13 @@ export const STORAGE_URL = `${API_BASE_URL}/storage`;
 
 const apiClient = axios.create({
   baseURL: `${API_BASE_URL}/api`,
-  withCredentials: true, // Changed to true to allow cookies
+  withCredentials: true,
   headers: {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    // 'Content-Type': 'application/json'
   }
 });
 
-// Function to get CSRF cookie
 export const getCsrfToken = () => {
   return axios.get(`${API_BASE_URL}/sanctum/csrf-cookie`, {
     withCredentials: true
@@ -27,7 +26,6 @@ apiClient.interceptors.request.use(async (config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   
-  // Get CSRF token from cookie
   const xsrfToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('XSRF-TOKEN='))

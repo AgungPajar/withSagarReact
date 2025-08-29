@@ -18,7 +18,7 @@ import {
   TextField,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import SidebarAdminMPK from '@/components/layouts/SidebarMPK';
+import SidebarAdminMPK from '@/components/layouts/SidebarMpk';
 import Swal from 'sweetalert2';
 import { motion } from 'framer-motion';
 import LoadingSpinner from '@/components/LoadingSpinner';

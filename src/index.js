@@ -16,35 +16,20 @@ root.render(
 const promptUserToUpdate = (registration) => {
   if (registration && registration.waiting) {
     Swal.fire({
-      title: 'Update E - OSSAGAR',
-      text: "Versi baru dari web ini tersedia, update sekarang!",
-      icon: 'info',
-      confirmButtonText: 'Lanjutkan',
-      timer: 4000,
+      title: 'Updating...',
+      text: 'Proses update, Ditunggu ya guys...',
+      timer: 2000,
       timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
       allowOutsideClick: false,
       allowEscapeKey: false,
-      allowEnterKey: false,
-    }).then((result) => {
-      const listener = () => {
-        window.location.reload()
-        navigator.serviceWorker.addEventListener('controllerchange', listener)
-      }
-      navigator.serviceWorker.addEventListener('controllerchange', listener)
-
-      Swal.fire({
-        title: 'Updating...',
-        text: 'Proses update, Ditunggu ya guys...',
-        timer: 2000,
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      });
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
   }
 }
 
@@ -60,7 +45,4 @@ navigator.serviceWorker.ready.then(registration => {
   }
 })
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

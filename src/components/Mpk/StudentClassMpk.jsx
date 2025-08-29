@@ -1,8 +1,10 @@
 // src/components/pages/MpkClassPage.jsx
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import SidebarAdminMPK from '@/components/layouts/SidebarMPK';
-import useMpkClassData from '@/hooks/Mpk/useStudentDataMpk';
+import { FormControl, InputLabel, MenuItem, Select, Typography, Button } from '@mui/material';
+import { FilterList } from "@mui/icons-material";
+import SidebarAdminMPK from '@/components/layouts/SidebarMpk';
+import useStudentData from "@/hooks/Osis/useStudentData";
+import FilterDialog from "../FilterDialogClubs";
 import '../../css/style.css';
 
 
@@ -13,32 +15,87 @@ export default function MpkClassPage({ classLevel, title }) {
     selectedJurusan,
     setSelectedJurusan,
     isLoading,
-  } = useMpkClassData(classLevel);
+    searchQuery,
+    setSearchQuery,
 
-  const filteredStudents = students.filter(s => !selectedJurusan || s.jurusan?.singkatan === selectedJurusan);
+    clubs,
+    selectedClubs,
+    setSelectedClubs,
+    isFilterModalOpen,
+    setFilterModalOpen,
+    isInitialDataLoading,
+  } = useStudentData(classLevel);
+
+
+  const filteredStudents = students.filter((s) => {
+    const searchLower = searchQuery.toLowerCase();
+
+    const matchesJurusan = !selectedJurusan || s.jurusan?.singkatan === selectedJurusan;
+
+    const matchesSearch =
+      s.name.toLowerCase().includes(searchLower) ||
+      s.nisn.toLowerCase().includes(searchLower);
+
+    const matchesClubs = selectedClubs.length === 0 ||
+      s.clubs.some(club => selectedClubs.includes(club.id))
+
+    return matchesJurusan && matchesSearch && matchesClubs;
+  });
 
   return (
     <div className="flex">
       <SidebarAdminMPK />
       <main className="flex-1 p-6 pt-24 md:pt-16 md:ml-64 w-full">
-        <Typography variant="h5" className="mb-4 font-bold">{title}</Typography>
+        <div className="mb-4">
+          <Typography variant="h5" className="font-bold">{title}</Typography>
+        </div>
 
-        <div className="flex flex-wrap items-center justify-between mb-4 gap-4">
-          <FormControl size="small" sx={{ minWidth: 200, maxWidth: 250 }}>
-            <InputLabel>Filter Jurusan</InputLabel>
-            <Select
-              value={selectedJurusan}
-              label="Filter Jurusan"
-              onChange={(e) => setSelectedJurusan(e.target.value)}
+        <div className="mb-6 p-4 bg-white rounded-xl shadow">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <Button
+              variant="contained"
+              color="success"
+              disabled
+              className="text-xs px-3 py-1.5 sm:text-sm sm:px-4 sm:py-2"
             >
-              <MenuItem value="">Semua</MenuItem>
-              {jurusans.map((j) => (
-                <MenuItem key={j.id} value={j.singkatan}>
-                  {j.singkatan}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              Insert Data
+            </Button>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>Filter Jurusan</InputLabel>
+                <Select
+                  className="border border-gray-300 rounded text-sm shadow-sm"
+                  value={selectedJurusan}
+                  label="Filter Jurusan"
+                  onChange={(e) => setSelectedJurusan(e.target.value)}
+                >
+                  <MenuItem value="">Semua</MenuItem>
+                  {jurusans.map((j) => (
+                    <MenuItem key={j.id} value={j.singkatan}>
+                      {j.singkatan}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <input
+                type="text"
+                placeholder="Cari Nama atau Nisn"
+                className="border p-2 rounded text-sm w-full sm:w-auto flex-grow"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <Button
+                variant="outlined"
+                onClick={() => setFilterModalOpen(true)}
+                startIcon={<FilterList size={18} />}
+              >
+                Filter Ekskul
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div className="overflow-auto">
@@ -66,13 +123,24 @@ export default function MpkClassPage({ classLevel, title }) {
                   </tr>
                 ))
               )}
-               {!isLoading && filteredStudents.length === 0 && (
+              {!isLoading && filteredStudents.length === 0 && (
                 <tr><td colSpan={5} className="text-center py-6 text-gray-500 font-semibold">Data tidak ditemukan.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </main>
+
+      <FilterDialog
+        open={isFilterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        title="Filter Ekstrakurikuler"
+        items={clubs}
+        selectedItems={selectedClubs}
+        onApply={setSelectedClubs}
+        isLoading={isInitialDataLoading}
+      />
+
     </div>
   );
 }

@@ -8,6 +8,7 @@ export default function ClubsAdminPage() {
   const navigate = useNavigate();
   const [clubs, setClubs] = useState([]);
   const [search, setSearch] = useState('');
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   const fetchClubs = async () => {
     try {
@@ -41,9 +42,9 @@ export default function ClubsAdminPage() {
 
   return (
     <div className="flex">
-      <SidebarAdmin />
+      <SidebarAdmin isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
 
-      <main className="flex-1 p-4 pt-24 md:pt-16 md:ml-64 w-full">
+      <main className={`flex-1 p-4 pt-24 md:pt-16 w-full ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-28'}`}>
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
           <h1 className="text-2xl font-bold">EKSTRAKURIKULER SMKN 1 GARUT</h1>
 

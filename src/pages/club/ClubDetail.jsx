@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { STORAGE_URL } from '@/utils/axiosConfig';
 import SidebarClub from '@/components/ClubDetail/SidebarClub';
 import Footer from '@/components/layouts/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import DashboardCard from '@/components/ClubDetail/DashboardCard';
+import DashboardCard from '@/components/DashboardCard';
 import { Users, Calendar, BarChart2, DollarSign } from 'lucide-react';
 import { useClubData } from '@/hooks/Clubs/useClubData';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
   const location = useLocation();
-  const { club, loading } = useClubData(clubId);
+  const { club, schedules,loading } = useClubData(clubId);
 
   const isHomePage = location.pathname === `/club/${clubId}`;
   const [isExpanded, setIsExpanded] = useState(isHomePage);

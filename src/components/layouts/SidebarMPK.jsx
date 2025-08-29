@@ -5,7 +5,7 @@ import { getMpkMenuItems } from '../Config/SidebarConfig'
 import apiClient from '@/utils/axiosConfig'
 import Swal from 'sweetalert2'
 
-export default function SidebarMPK()  {
+export default function SidebarMPK({ isExpanded, setIsExpanded })  {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem('user'))
 
@@ -16,6 +16,8 @@ export default function SidebarMPK()  {
       role="mpk"
       title="MPK ADMIN"
       menuItems={menuItems}
+      isExpanded={isExpanded} 
+      setIsExpanded={setIsExpanded}
     />
   )
 }

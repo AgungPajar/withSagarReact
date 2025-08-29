@@ -1,8 +1,18 @@
 import React from 'react';
+import { Box } from '@mui/material';
 
-const Footer = () => {
+export default function PublicFooter() {
   return (
-    <footer className="fixed bottom-0 w-full text-center py-3 text-sm text-gray-500 border-t border-gray-200 bg-gray-50 z-50">
+    <Box
+      component="footer"
+      sx={{
+        textAlign: 'center',
+        py: 2,
+        fontSize: 14,
+        color: '#666',
+        borderTop: '1px solid #ddd',
+      }}
+    >
       © 2025 OSSAGAR'59 | <a
             href="https://instagram.com/jarss_pajar"
             target="_blank"
@@ -11,8 +21,6 @@ const Footer = () => {
           > 
             created by jarss
           </a>
-    </footer>
+    </Box>
   );
-};
-
-export default Footer;
+}

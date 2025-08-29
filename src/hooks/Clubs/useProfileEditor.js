@@ -1,12 +1,10 @@
-import {useState, useEffect, useCallback} from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import apiClient, {STORAGE_URL, getCsrfToken} from '@/utils/axiosConfig'
+import apiClient, { STORAGE_URL, getCsrfToken } from '@/utils/axiosConfig'
 import Swal from 'sweetalert2'
 
-export const useProfileEditor = (clubId) => {
-  const navigate = useNavigate();
-
-  const [club, setClub] = useState(null)
+export const useProfileEditor = ({ role, clubId }) => {
+  const [profileData, setProfileData] = useState(null);
   const [formState, setFormState] = useState({
     username: '',
     name: '',
@@ -17,35 +15,66 @@ export const useProfileEditor = (clubId) => {
   const [logoPreview, setLogoPreview] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [initialState, setInitialState] = useState(null);
+  const [schedules, setSchedules] = useState([]);
+  
 
-  const fetchClub = useCallback (async () => {
-    if (!clubId) return
+  const fetchProfile = useCallback(async () => {
+    const endpoint = role === 'osis' ? '/admin/profile' : `/clubs/${clubId}`
+    if (!endpoint || (role === 'club' && !clubId)) return
+
     setLoading(true)
     try {
-      const res = await apiClient.get(`/clubs/${clubId}`)
-      const data = res.data
-      setClub(data)
-      setFormState({
-        username: data.username || '',
-        name: data.name || '',
-        description: data.description || '',
-        groupLink: data.group_link || '',
-      });
-      setLogoPreview(data.logo_path ? `${STORAGE_URL}/${data.logo_path}` : '/logoeks.png')
+      const res = await apiClient.get(endpoint)
+      const dataFromServer = res.data;
+
+      let formattedData = {}
+      let logoPath = null
+      if (role === 'osis') {
+        formattedData = {
+          name: dataFromServer.name || '',
+          username: dataFromServer.username || '',
+          description: dataFromServer.club?.description || '',
+          groupLink: dataFromServer.club?.group_link || '',
+        };
+        logoPath = dataFromServer.club?.logo_path;
+        console.log('--- DEBUG LOGO OSIS ---');
+        console.log('Data dari Server:', dataFromServer);
+        console.log('Path Logo yang didapat:', logoPath);
+        console.log('URL Final untuk Logo:', logoPath ? `${STORAGE_URL}/${logoPath}` : 'Tidak ada logo');
+      } else {
+        formattedData = {
+          name: dataFromServer.name || '',
+          username: dataFromServer.username || '',
+          description: dataFromServer.description || '',
+          groupLink: dataFromServer.group_link || '',
+        };
+        logoPath = dataFromServer.logo_path;
+      }
+
+      if (role === 'club' && clubId) {
+        const scheduleRes = await apiClient.get(`/clubs/${clubId}/schedules`);
+        setSchedules(scheduleRes.data);
+      }
+
+      setFormState(formattedData);
+      setInitialState(formattedData);
+      setProfileData(dataFromServer);
+      setLogoPreview(logoPath ? `${STORAGE_URL}/${dataFromServer.logo_path}` : '/logoeks.png')
     } catch (error) {
-      Swal.fire('Error', 'Gagal memuat data klub.', 'error');
+      Swal.fire('Error', `Gagal memuat profil ${role}.`, 'error');
     } finally {
       setLoading(false)
     }
-  }, [clubId])
+  }, [role, clubId])
 
   useEffect(() => {
-    fetchClub();
-  }, [fetchClub])
+    fetchProfile();
+  }, [fetchProfile])
 
   const handleInputChange = (e) => {
-    const {name, value} = e.target
-    setFormState(prevState => ({...prevState, [name]: value}))
+    const { name, value } = e.target
+    setFormState(prevState => ({ ...prevState, [name]: value }))
   }
 
   const handleLogoChange = (e) => {
@@ -56,23 +85,82 @@ export const useProfileEditor = (clubId) => {
     }
   };
 
+  const handleSaveLogo = async () => {
+    if (!logoFile) return;
+    setSubmitting(true);
+    const endpoint = role === 'osis' ? '/admin/profile' : `/clubs/${clubId}`;
+    try {
+      const formData = new FormData();
+      formData.append('logo', logoFile);
+
+      await apiClient.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setLogoFile(null); // Sembunyikan lagi tombol simpan
+      await fetchProfile(); // Ambil data terbaru (termasuk path logo baru)
+      Swal.fire('Sukses!', 'Logo berhasil diperbarui.', 'success');
+    } catch (err) {
+      Swal.fire('Gagal!', 'Gagal memperbarui logo.', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancelLogoChange = () => {
+    setLogoFile(null)
+    const originalLogoPath = initialState?.logoPath
+    setLogoPreview(originalLogoPath ? `${STORAGE_URL}/${originalLogoPath}` : '/logoeks.png');
+  }
+
   const handleSubmitProfile = async () => {
     setSubmitting(true)
+    const endpoint = role === 'osis' ? '/admin/profile' : `/clubs/${clubId}`
+
     try {
       const formData = new FormData();
       formData.append('username', formState.username);
       formData.append('name', formState.name);
       formData.append('description', formState.description);
       formData.append('group_link', formState.groupLink);
-      if (logoFile) formData.append('logo', logoFile, {
-        headers: {'Content-Type' : 'multipart/form-data'},
+
+      if (logoFile) {
+        formData.append('logo', logoFile);
+      }
+
+      const response = await apiClient.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
+
+      await fetchProfile()
+      setLogoFile(null)
+
       Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Profil berhasil diperbarui.', timer: 2000, showConfirmButton: false });
-      navigate(`/club/${clubId}`);
     } catch (error) {
       Swal.fire({ icon: 'error', title: 'Oops!', text: error?.response?.data?.message || 'Terjadi kesalahan.' });
     } finally {
       setSubmitting(false)
+    }
+  };
+
+  const addSchedule = async (clubIdentifier, newScheduleData) => {
+    try {
+      const res = await apiClient.post(`/clubs/${clubIdentifier}/schedules`, newScheduleData);
+      setSchedules(currentSchedules => [...currentSchedules, res.data]);
+      Swal.fire('Sukses', 'Jadwal berhasil ditambahkan.', 'success');
+    } catch (err) {
+      const errorMsg = err.response?.data?.errors?.day_of_week[0] || 'Gagal menambahkan jadwal.';
+      Swal.fire('Gagal', errorMsg, 'error');
+    }
+  };
+
+  const deleteSchedule = async (scheduleId) => {
+    try {
+      await apiClient.delete(`/schedules/${scheduleId}`);
+      setSchedules(currentSchedules => currentSchedules.filter(s => s.id !== scheduleId));
+      Swal.fire('Sukses', 'Jadwal berhasil dihapus.', 'success');
+    } catch (err) {
+      Swal.fire('Gagal', 'Gagal menghapus jadwal.', 'error');
     }
   };
 
@@ -100,7 +188,7 @@ export const useProfileEditor = (clubId) => {
       showCancelButton: true,
       confirmButtonText: 'Simpan',
       cancelButtonText: 'Batal',
-      reverseButtons: true, 
+      reverseButtons: true,
       preConfirm: () => {
         const oldPassword = document.getElementById('oldPassword').value;
         const newPassword = document.getElementById('newPassword').value;
@@ -159,17 +247,28 @@ export const useProfileEditor = (clubId) => {
         }
       }
     });
+
+
+
   };
 
   return {
-    club,
+    profileData,
     formState,
+    setFormState,
+    initialState,
     logoPreview,
+    logoFile,
     loading,
     submitting,
     handleInputChange,
     handleLogoChange,
+    handleCancelLogoChange,
+    handleSaveLogo,
     handleSubmitProfile,
     handleChangePassword,
+    schedules,
+    addSchedule,
+    deleteSchedule,
   };
 }

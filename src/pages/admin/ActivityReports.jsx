@@ -11,6 +11,7 @@ export default function AdminActivityReport() {
   const [filteredReports, setFilteredReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   useEffect(() => {
     fetchReports();
@@ -52,8 +53,8 @@ export default function AdminActivityReport() {
 
   return (
     <div className="min-h-screen bg-white flex font-poppins">
-      <SidebarAdmin />
-      <main className="flex-1 p-4 pt-24 md:pt-16 md:ml-64 w-full">
+      <SidebarAdmin isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
+      <main className={`flex-1 p-4 pt-24 md:pt-16 w-full ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-28'}`}>
         <h1 className="text-2xl font-bold mb-4">Semua Laporan Kegiatan Ekskul</h1>
 
         <div className="py-6 ">

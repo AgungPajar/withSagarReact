@@ -38,6 +38,7 @@ export default function MemberListAdmin() {
   const [searchName, setSearchName] = useState('');
   const [availableStudents, setAvailableStudents] = useState([]);
   const [openAddDialog, setOpenAddDialog] = useState(false)
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   const kelasOrder = { X: 1, XI: 2, XII: 3 };
 
@@ -233,69 +234,67 @@ export default function MemberListAdmin() {
     fetchData();
   }, [clubId]);
   return (
-    <div>
-      <div className="min-h-screen bg-white text-gray-800 p-4 pt-5">
-        <div className="flex flex-col items-center justify-center w-full max-w-md md:max-w-full">
-          <SidebarAdmin />
-          <motion.main
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full"
-          >
-            {loading ? (
-              <LoadingSpinner />
-            ) : (
-              <Paper className="mt-6 w-full max-w-6xl mx-auto p-4">
-                <Typography variant="h6" className="mb-10">Daftar Anggota</Typography>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-                  <input
-                    type="text"
-                    placeholder="Cari nama..."
-                    className="border px-3 py-1 rounded text-sm"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                  />
-                  <Button variant="contained" onClick={() => setOpenAddDialog(true)}>
-                    + Add Anggota
-                  </Button>
-                  <Button variant="contained" color="secondary" onClick={handleSeleksi}>
-                    Seleksi
-                  </Button>
-                </div>
-                <div className="overflow-x-auto">
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>No</TableCell>
-                        <TableCell>NISN</TableCell>
-                        <TableCell>Nama</TableCell>
-                        <TableCell>Phone</TableCell>
-                        <TableCell>Kelas</TableCell>
-                        <TableCell>Aksi</TableCell>
+    <div className="min-h-screen bg-white flex font-poppins">
+      <SidebarAdmin isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
+      <main className={`flex-1 p-4 pt-24 md:pt-16 w-full ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-28'}`}>
+        <motion.main
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="flex-1 p-4 pt-20 md:pt-16 md:ml-64 w-full"
+        >
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <Paper className="mt-6 w-full max-w-6xl mx-auto p-4">
+              <Typography variant="h6" className="mb-10">Daftar Anggota</Typography>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                <input
+                  type="text"
+                  placeholder="Cari nama..."
+                  className="border px-3 py-1 rounded text-sm"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                />
+                <Button variant="contained" onClick={() => setOpenAddDialog(true)}>
+                  + Add Anggota
+                </Button>
+                <Button variant="contained" color="secondary" onClick={handleSeleksi}>
+                  Seleksi
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>No</TableCell>
+                      <TableCell>NISN</TableCell>
+                      <TableCell>Nama</TableCell>
+                      <TableCell>Phone</TableCell>
+                      <TableCell>Kelas</TableCell>
+                      <TableCell>Aksi</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredMembers.map((student, index) => (
+                      <TableRow key={student.request_id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{student.nisn}</TableCell>
+                        <TableCell>{student.name}</TableCell>
+                        <TableCell>{student.phone}</TableCell>
+                        <TableCell>{student.class} {student.jurusan_singkatan} {student.rombel}</TableCell>
+                        <TableCell>
+                          <Button size="small" variant="outlined" onClick={() => handleDelete(student.id)}>Hapus</Button>
+                        </TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {filteredMembers.map((student, index) => (
-                        <TableRow key={student.request_id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{student.nisn}</TableCell>
-                          <TableCell>{student.name}</TableCell>
-                          <TableCell>{student.phone}</TableCell>
-                          <TableCell>{student.class} {student.jurusan_singkatan} {student.rombel}</TableCell>
-                          <TableCell>
-                            <Button size="small" variant="outlined" onClick={() => handleDelete(student.id)}>Hapus</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </Paper>
-            )}
-          </motion.main>
-        </div>
-      </div>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Paper>
+          )}
+        </motion.main>
+      </main>
       <Footer />
 
       <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} fullWidth maxWidth="sm">
