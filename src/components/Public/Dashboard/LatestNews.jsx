@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import apiClient from '@/utils/axiosConfig'
 import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react'
+import SkeletonCard from '../News/SkeletonCard'
 
 function LatestNews() {
   const [news, setNews] = useState([])
@@ -26,8 +27,22 @@ function LatestNews() {
     return new Date(dateString).toLocaleDateString('id-ID', options)
   }
 
-  if (loading) {
-    return <p className="text-center py-10">Memuat berita...</p>
+ if (loading) {
+    return (
+      <section className="bg-[#f0f2f5] py-12 px-4 sm:px-6">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-8">
+            <p className="text-[#b8860b] font-bold tracking-widest">NEWS</p>
+            <h2 className="text-3xl font-bold text-[#333]">Informasi Terbaru</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[...Array(4)].map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (

@@ -3,6 +3,7 @@ import { FiSearch, FiCalendar, FiUser, FiMessageSquare, FiChevronRight, FiArrowL
 import { useParams, Link } from 'react-router-dom';
 import apiClient from '@/utils/axiosConfig';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import DOMPurify from 'dompurify';
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -50,8 +51,9 @@ export default function NewsDetail() {
     return new Date(dateString).toLocaleDateString('id-ID', options);
   };
 
-  if (loading) return <LoadingSpinner/>
+  if (loading) return <LoadingSpinner />
   if (!news) return <div className="text-center py-20">Berita tidak ditemukan.</div>;
+  const sanitizedContent = DOMPurify.sanitize(news.content);
 
   return (
     <div className="bg-white font-sans">
@@ -77,9 +79,10 @@ export default function NewsDetail() {
 
               <img src={news.imageUrl} alt={news.title} className="w-full h-auto max-h-[500px] object-cover rounded-lg mb-8" />
 
-              <div className="prose max-w-none text-gray-700 space-y-4">
-                <p>{news.content}</p>
-              </div>
+              <div
+                className="prose max-w-none text-gray-700 space-y-4"
+                dangerouslySetInnerHTML={{ __html: sanitizedContent }} // <-- Pake yang udah aman
+              />
 
               <div className="mt-8">
                 <span className="font-semibold mr-2">Tags:</span>
