@@ -130,6 +130,7 @@ export default function DaftarKetua() {
   // State untuk data dari Backend
   const [clubs, setClubs] = useState([]);
   const [jurusans, setJurusans] = useState([]);
+  const [availableKelas, setAvailableKelas] = useState([]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -160,9 +161,33 @@ export default function DaftarKetua() {
     }
   }
 
-  // 2. Generate opsi kelas secara dinamis
+  // 2. Fetch opsi kelas secara dinamis dari backend
+  useEffect(() => {
+    const fetchKelas = async () => {
+      if (formData.tingkatan && formData.jurusan) {
+        try {
+          const res = await apiClient.get('/kelas/filter', {
+            params: {
+              tingkatan: formData.tingkatan,
+              jurusan_id: formData.jurusan
+            }
+          });
+          setAvailableKelas(res.data || []);
+        } catch (err) {
+          console.error('Error fetching kelas:', err);
+          setAvailableKelas([]);
+        }
+      } else {
+        setAvailableKelas([]);
+      }
+    };
+    fetchKelas();
+  }, [formData.tingkatan, formData.jurusan]);
+
   let opsiKelasDinamis = [];
-  if (formData.tingkatan && singkatanJurusan) {
+  if (availableKelas.length > 0) {
+    opsiKelasDinamis = availableKelas.map(k => k.nama);
+  } else if (formData.tingkatan && singkatanJurusan) {
     opsiKelasDinamis = [
       `${formData.tingkatan} ${singkatanJurusan} 1`,
       `${formData.tingkatan} ${singkatanJurusan} 2`,
