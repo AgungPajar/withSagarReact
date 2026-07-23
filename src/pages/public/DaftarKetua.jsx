@@ -227,15 +227,12 @@ export default function DaftarKetua() {
     try {
       console.log('Data yang disubmit:', formData);
       
-      // Request aslinya (Buka komentar ini kalau endpoint backend udah siap)
-      // await apiClient.post('/register-ketua', formData);
+      const response = await apiClient.post('/register-ketua', formData);
       
-      // Simulasi
-      await new Promise((resolve) => setTimeout(resolve, 1500));
       Swal.fire({
         icon: 'success',
         title: 'Berhasil!',
-        text: 'Pendaftaran Ketua Ekskul berhasil dikirim (simulasi).',
+        text: response.data.message || 'Pendaftaran Ketua Ekskul berhasil dikirim.',
         timer: 2000,
         showConfirmButton: false,
         customClass: {
@@ -246,9 +243,16 @@ export default function DaftarKetua() {
       });
     } catch (error) {
       console.error(error);
+      const errMessage = error.response?.data?.message || 'Gagal mendaftar. Silakan coba lagi.';
+      const errDetails = error.response?.data?.errors;
+      let detailedMsg = errMessage;
+      if (errDetails) {
+        detailedMsg = Object.values(errDetails).flat().join('\n');
+      }
+
       Swal.fire({
         title: 'Gagal!', 
-        text: 'Gagal mendaftar. Silakan coba lagi.', 
+        text: detailedMsg, 
         icon: 'error',
         customClass: {
           confirmButton: 'border-4 border-black bg-red-500 text-white font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
