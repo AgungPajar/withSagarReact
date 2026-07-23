@@ -177,101 +177,104 @@ const EditProfileStudent = () => {
   if (loadingData) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-200 to-purple-300 px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
+    <div className="min-h-screen flex justify-center items-center bg-blue-100 px-4 py-10 font-sans">
+      <div className="w-full max-w-md bg-white border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6">
 
         {/* Header dengan tombol kembali */}
-        <div className="relative mb-6 flex justify-center items-center text-blue-800">
+        <div className="relative mb-8 flex justify-center items-center text-black">
           <button
             onClick={() => navigate(`/student/${studentId}`)}
-            className="absolute left-0 flex items-center text-blue-700 hover:text-blue-500 font-semibold text-sm"
+            className="absolute left-0 flex items-center bg-yellow-300 border-4 border-black px-3 py-1 font-black text-sm uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
           >
-            &lt; Back
+            &lt; KEMBALI
           </button>
-          <h2 className="text-2xl font-bold">Edit Profile</h2>
+          <h2 className="text-2xl font-black uppercase tracking-wider bg-purple-300 px-3 py-1 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            EDIT PROFIL
+          </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block font-medium text-gray-700 mb-1">NISN</label>
+            <label className="block font-black text-black mb-2 uppercase text-sm">NISN</label>
             <input
               type="text"
               name="nisn"
               value={formData.nisn}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border-4 border-black bg-gray-200 text-gray-600 font-bold rounded-lg px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
               disabled
               placeholder="NISN tidak dapat diubah"
             />
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Nama</label>
+            <label className="block font-black text-black mb-2 uppercase text-sm">Nama</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border-4 border-black bg-white text-black font-bold rounded-lg px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[4px] focus:translate-y-[4px] focus:shadow-none transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Nomor Telp</label>
+            <label className="block font-black text-black mb-2 uppercase text-sm">Nomor Telp</label>
             <input
               type="text"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border-4 border-black bg-white text-black font-bold rounded-lg px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[4px] focus:translate-y-[4px] focus:shadow-none transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+            <label className="block font-black text-black mb-2 uppercase text-sm">Tanggal Lahir</label>
             <input
               type="date"
               name="tanggal_lahir"
               value={formData.tanggal_lahir}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border-4 border-black bg-white text-black font-bold rounded-lg px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[4px] focus:translate-y-[4px] focus:shadow-none transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Alamat</label>
+            <label className="block font-black text-black mb-2 uppercase text-sm">Alamat</label>
             <input
               type="text"
               name="alamat"
               value={formData.alamat}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border-4 border-black bg-white text-black font-bold rounded-lg px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[4px] focus:translate-y-[4px] focus:shadow-none transition-all"
               required
             />
           </div>
 
-          <Button
-            variant='outlined'
-            color="error"
-            fullWidth
-            className='mb-4 mt-8'
-            onClick={handleChangePassword}
-          >
-            Ubah Password
-          </Button>
+          <div className="flex flex-col gap-4 mt-8 pt-4">
+            <button
+              type="button"
+              onClick={handleChangePassword}
+              className="w-full bg-red-400 border-4 border-black text-black font-black py-3 rounded-lg uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
+            >
+              UBAH PASSWORD
+            </button>
 
-          <button
-            type="submit"
-            disabled={loadingSubmit}
-            className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${loadingSubmit
-              ? 'bg-blue-400 cursor-wait text-white'
-              : 'border-2 border-blue-500 text-blue-500 hover:bg-blue-200 hover:text-white'
+            <button
+              type="submit"
+              disabled={loadingSubmit}
+              className={`w-full border-4 border-black font-black py-3 rounded-lg uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all ${
+                loadingSubmit
+                  ? 'bg-gray-400 text-gray-700 cursor-wait'
+                  : 'bg-green-400 text-black cursor-pointer'
               }`}
-          >
-            {loadingSubmit ? 'Menyimpan...' : 'Simpan Perubahan'}
-          </button>
+            >
+              {loadingSubmit ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN'}
+            </button>
+          </div>
         </form>
       </div>
     </div>
