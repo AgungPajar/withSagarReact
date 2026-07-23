@@ -25,4 +25,4 @@ yarn-error.log*
 .env
 
 /.well-know
-.user.ignoring
+.user.ini
