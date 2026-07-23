@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient, { STORAGE_URL } from '@/utils/axiosConfig'
 import Swal from 'sweetalert2'
+import imageCompression from 'browser-image-compression'
 
 export const useProfileEditor = ({ role, clubId }) => {
   const [profileData, setProfileData] = useState(null);
@@ -77,11 +78,28 @@ export const useProfileEditor = ({ role, clubId }) => {
     setFormState(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const handleLogoChange = (e) => {
+  const handleLogoChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
-      setLogoFile(file)
-      setLogoPreview(URL.createObjectURL(file))
+      if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg') {
+        const options = {
+          maxSizeMB: 0.1, // 100 KB
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+          fileType: 'image/png', // Always keep as PNG
+        };
+        try {
+          const compressedFile = await imageCompression(file, options);
+          setLogoFile(compressedFile);
+          setLogoPreview(URL.createObjectURL(compressedFile));
+        } catch (error) {
+          console.error('Error compressing image:', error);
+          Swal.fire('Gagal!', 'Terjadi kesalahan saat kompresi gambar.', 'error');
+        }
+      } else {
+        setLogoFile(file)
+        setLogoPreview(URL.createObjectURL(file))
+      }
     }
   };
 
