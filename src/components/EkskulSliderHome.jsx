@@ -6,11 +6,21 @@ import 'swiper/css/effect-coverflow';
 import { Autoplay, Navigation, EffectCoverflow } from 'swiper/modules';
 import apiClient, { STORAGE_URL } from '../utils/axiosConfig';
 import { motion } from 'framer-motion';
-import { Button } from '@mui/material'
+import { Button, Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, Divider } from '@mui/material';
+import { Users, X, CalendarDays } from 'lucide-react';
 
 const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
   const [clubs, setClubs] = useState([]);
+  const [selectedClub, setSelectedClub] = useState(null);
   const swiperRef = useRef(null);
+
+  const handleCardClick = (club) => {
+    setSelectedClub(club);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedClub(null);
+  };
 
   useEffect(() => {
     const fetchClubs = async () => {
@@ -76,6 +86,7 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
             <SwiperSlide key={club.hash_id} className="flex justify-center px-14 sm:px-0">
               {({ isActive }) => (
                 <motion.div
+                  onClick={() => handleCardClick(club)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{
                     opacity: 1,
@@ -84,7 +95,7 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
                     opacity: isActive ? 1 : 0.5,
                   }}
                   transition={{ duration: 0.4 }}
-                  className="bg-gradient-to-br from-white via-blue-50 to-blue-100 border-2 border-color-secondary shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-2xl p-6 text-center w-full max-w-xs"
+                  className="cursor-pointer bg-gradient-to-br from-white via-blue-50 to-blue-100 border-2 border-color-secondary shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-2xl p-6 text-center w-full max-w-xs hover:shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
                 >
                   <div className="bg-gray-200 aspect-square flex items-center justify-center mb-4 rounded-lg overflow-hidden p-4 max-h-32 mx-auto">
                     {club.logo_path ? (
@@ -94,7 +105,7 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
                         className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28"
                       />
                     ) : (
-                      <span className="text-black font-bold">LOGO</span>
+                      <Users size={64} className="text-gray-400" />
                     )}
                   </div>
                   <h3 className="font-bold text-blue-700">{club.name}</h3>
@@ -112,6 +123,62 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
         </div> */}
 
       </div>
+
+      <Dialog open={!!selectedClub} onClose={handleCloseDialog} maxWidth="sm" fullWidth PaperProps={{ style: { borderRadius: 16 } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" fontWeight="bold">Detail Ekstrakurikuler</Typography>
+          <IconButton onClick={handleCloseDialog} size="small">
+            <X size={20} />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent>
+          {selectedClub && (
+            <Box className="flex flex-col items-center pb-2">
+              <Box className="w-24 h-24 mb-4 rounded-full overflow-hidden flex items-center justify-center border-2 border-blue-200 bg-gray-100 shadow-sm">
+                {selectedClub.logo_path ? (
+                  <img
+                    src={`${STORAGE_URL}/${selectedClub.logo_path}`}
+                    alt={selectedClub.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Users size={40} className="text-gray-400" />
+                )}
+              </Box>
+              <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom align="center">
+                {selectedClub.name}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" align="center" className="mb-4">
+                {selectedClub.description || 'Belum ada deskripsi untuk ekstrakurikuler ini.'}
+              </Typography>
+
+              <Box className="w-full mt-4 bg-blue-50 rounded-xl p-5 border border-blue-100">
+                <Typography variant="subtitle1" fontWeight="bold" className="flex items-center gap-2 mb-4 text-blue-800">
+                  <CalendarDays size={20} />
+                  Jadwal Latihan
+                </Typography>
+                {selectedClub.schedules && selectedClub.schedules.length > 0 ? (
+                  <ul className="space-y-3">
+                    {selectedClub.schedules.map((schedule) => (
+                      <li key={schedule.id} className="flex justify-between items-center text-sm bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                        <span className="font-bold text-gray-700 uppercase tracking-wider text-xs bg-gray-100 px-2 py-1 rounded">{schedule.day_of_week}</span>
+                        <span className="font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                          {schedule.start_time.substring(0,5)} - {schedule.end_time.substring(0,5)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Typography variant="body2" color="text.secondary" className="italic text-center bg-white p-3 rounded-lg border border-gray-100">
+                    Jadwal belum tersedia.
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 });

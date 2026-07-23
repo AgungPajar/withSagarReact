@@ -3,6 +3,7 @@ import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import apiClient, { STORAGE_URL } from '@/utils/axiosConfig';
 import SidebarAdmin from '@/components/layouts/SidebarOsis';
+import { Users } from 'lucide-react';
 
 export default function ClubsAdminPage() {
   const navigate = useNavigate();
@@ -71,15 +72,17 @@ export default function ClubsAdminPage() {
               className="flex flex-col sm:flex-row items-center sm:items-center justify-between border rounded-xl p-4 shadow-sm hover:shadow-md transition"
             >
               <div className="flex items-center gap-4 w-full sm:w-auto mb-4 sm:mb-0">
-                <img
-                  src={
-                    club.logo_path
-                      ? `${STORAGE_URL}/${club.logo_path}`
-                      : '/logoeks.png'
-                  }
-                  alt={club.name}
-                  className="w-16 h-16 object-cover border rounded"
-                />
+                {club.logo_path ? (
+                  <img
+                    src={`${STORAGE_URL}/${club.logo_path}`}
+                    alt={club.name}
+                    className="w-16 h-16 object-cover border rounded"
+                  />
+                ) : (
+                  <div className="w-16 h-16 flex items-center justify-center border rounded bg-gray-100">
+                    <Users size={32} className="text-gray-400" />
+                  </div>
+                )}
                 <span className="font-semibold text-lg">{club.name}</span>
               </div>
 

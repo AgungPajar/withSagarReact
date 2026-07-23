@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   AppBar, Toolbar, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Button, Select, MenuItem, CircularProgress
 } from '@mui/material';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { STORAGE_URL } from '@/utils/axiosConfig';
@@ -40,11 +40,17 @@ export default function AttendancePage() {
             elevation={4}
             sx={{ p: { xs: 2, sm: 4 }, widht: '100%', maxWidth: 600, border: '2Apx solid #3b82f6', borderRadius: 3 }}
           >
-            <img
-              src={club?.logo_path ? `${STORAGE_URL}/${club.logo_path}` : '/logoeks.png'}
-              alt="Logo"
-              className='w-28 h28 mx-auto mb-4 rounded-full object-cover border-4 border-white shadow-md'
-            />
+            {club?.logo_path ? (
+              <img
+                src={`${STORAGE_URL}/${club.logo_path}`}
+                alt="Logo"
+                className='w-28 h-28 mx-auto mb-4 rounded-full object-cover border-4 border-white shadow-md'
+              />
+            ) : (
+              <div className="w-28 h-28 mx-auto mb-4 rounded-full border-4 border-white shadow-md flex items-center justify-center bg-gray-100">
+                <Users size={48} className="text-gray-400" />
+              </div>
+            )}
 
             <Typography variant="h5" align="center" sx={{ mb: 2, fontWeight: 'bold' }}>
               Presensi {club ? club.name : 'Memuat...'}

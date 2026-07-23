@@ -6,7 +6,7 @@ import { Paper, Typography, TextField, Button } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 
 import { STORAGE_URL } from '@/utils/axiosConfig';
 import Footer from '@/components/layouts/Footer';
@@ -50,11 +50,17 @@ export default function ReportPage() {
           </button>
 
           <Paper elevation={4} sx={{ p: 4, width: '100%', maxWidth: 500, borderRadius: 3 }}>
-            <img
-              src={club?.logo_path ? `${STORAGE_URL}/${club.logo_path}` : '/logoeks.png'}
-              alt="Logo"
-              className="w-28 h-28 mx-auto mb-4 rounded-full object-cover border-4 border-white shadow-md"
-            />
+            {club?.logo_path ? (
+              <img
+                src={`${STORAGE_URL}/${club.logo_path}`}
+                alt="Logo"
+                className="w-28 h-28 mx-auto mb-4 rounded-full object-cover border-4 border-white shadow-md"
+              />
+            ) : (
+              <div className="w-28 h-28 mx-auto mb-4 rounded-full border-4 border-white shadow-md flex items-center justify-center bg-gray-100">
+                <Users size={48} className="text-gray-400" />
+              </div>
+            )}
             <Typography variant="h5" align="center" sx={{ mb: 2, fontWeight: 'bold' }}>
               Laporan Kegiatan {club?.name}
             </Typography>

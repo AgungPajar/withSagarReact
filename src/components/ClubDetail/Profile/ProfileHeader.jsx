@@ -1,6 +1,7 @@
 import React from "react";
 import { Paper, Avatar, Typography, Box, Button } from "@mui/material";
 import { motion, AnimatePresence } from 'framer-motion'
+import { Users } from 'lucide-react';
 
 export default function ProfileHeader({
   club, logoPreview, logoFile
@@ -10,10 +11,12 @@ export default function ProfileHeader({
       <div className="flex flex-col items-center gap-2">
         <Box className="relative">
           <Avatar
-            src={logoPreview || '/logoeks.png'}
-            alt="club?.name"
+            src={logoPreview || undefined}
+            alt={club?.name || 'Nama Ekskul'}
             sx={{ width: 90, height: 90, border: '3px solid #5bd0f3' }}
-          />
+          >
+            {!logoPreview && <Users size={40} className="text-gray-400" />}
+          </Avatar>
         </Box>
       </div>
 

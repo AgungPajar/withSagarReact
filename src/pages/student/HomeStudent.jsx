@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import { FaCheckCircle, FaWhatsapp, FaBars, FaTimes } from 'react-icons/fa';
 import { Typewriter } from 'react-simple-typewriter';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Users, X, CalendarDays } from 'lucide-react';
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Box, Divider } from '@mui/material';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Footer from '@/components/layouts/Footer';
 
@@ -13,6 +15,7 @@ export default function HomeStudent() {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedClub, setSelectedClub] = useState(null);
   const { studentId } = useParams();
   const navigate = useNavigate();
 
@@ -228,17 +231,27 @@ export default function HomeStudent() {
               <div key={club.hash_id} className={`${randomColor} border-4 border-black p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-transform duration-200 flex flex-col h-full`}>
                 
                 <div className="bg-white border-4 border-black p-2 mb-4 h-40 flex items-center justify-center shadow-inner">
-                  <img
-                    src={`${STORAGE_URL}/${club.logo_path}` || '/logoeks.png'}
-                    alt={club.name}
-                    className="w-full h-full object-contain"
-                  />
+                  {club.logo_path ? (
+                    <img
+                      src={`${STORAGE_URL}/${club.logo_path}`}
+                      alt={club.name}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <Users size={64} className="text-gray-400" />
+                  )}
                 </div>
                 
                 <h3 className="text-xl font-black uppercase mb-2 line-clamp-1 border-b-4 border-black pb-1">{club.name}</h3>
                 <p className="font-semibold text-sm mb-6 line-clamp-3 flex-grow">{club.description || 'Belum ada deskripsi.'}</p>
                 
                 <div className="mt-auto">
+                  <button
+                    onClick={() => setSelectedClub(club)}
+                    className="w-full mb-3 bg-white border-4 border-black text-black font-black py-2 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+                  >
+                    DETAIL
+                  </button>
                   {isOsis ? (
                     <div className="w-full bg-gray-400 border-4 border-black text-black font-black py-3 text-center uppercase cursor-not-allowed">
                       DITUTUP
@@ -314,6 +327,63 @@ export default function HomeStudent() {
       <div className="border-t-4 border-black">
         <Footer />
       </div>
+
+      {/* Dialog Detail Ekskul */}
+      <Dialog open={!!selectedClub} onClose={() => setSelectedClub(null)} maxWidth="sm" fullWidth PaperProps={{ style: { borderRadius: 16 } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" fontWeight="bold">Detail Ekstrakurikuler</Typography>
+          <IconButton onClick={() => setSelectedClub(null)} size="small">
+            <X size={20} />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent>
+          {selectedClub && (
+            <Box className="flex flex-col items-center pb-2">
+              <Box className="w-24 h-24 mb-4 rounded-full overflow-hidden flex items-center justify-center border-2 border-blue-200 bg-gray-100 shadow-sm">
+                {selectedClub.logo_path ? (
+                  <img
+                    src={`${STORAGE_URL}/${selectedClub.logo_path}`}
+                    alt={selectedClub.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Users size={40} className="text-gray-400" />
+                )}
+              </Box>
+              <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom align="center">
+                {selectedClub.name}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" align="center" className="mb-4">
+                {selectedClub.description || 'Belum ada deskripsi untuk ekstrakurikuler ini.'}
+              </Typography>
+
+              <Box className="w-full mt-4 bg-blue-50 rounded-xl p-5 border border-blue-100">
+                <Typography variant="subtitle1" fontWeight="bold" className="flex items-center gap-2 mb-4 text-blue-800">
+                  <CalendarDays size={20} />
+                  Jadwal Latihan
+                </Typography>
+                {selectedClub.schedules && selectedClub.schedules.length > 0 ? (
+                  <ul className="space-y-3">
+                    {selectedClub.schedules.map((schedule) => (
+                      <li key={schedule.id} className="flex justify-between items-center text-sm bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                        <span className="font-bold text-gray-700 uppercase tracking-wider text-xs bg-gray-100 px-2 py-1 rounded">{schedule.day_of_week}</span>
+                        <span className="font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                          {schedule.start_time.substring(0,5)} - {schedule.end_time.substring(0,5)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Typography variant="body2" color="text.secondary" className="italic text-center bg-white p-3 rounded-lg border border-gray-100">
+                    Jadwal belum tersedia.
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

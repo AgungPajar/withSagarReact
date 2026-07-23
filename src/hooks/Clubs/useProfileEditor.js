@@ -61,7 +61,7 @@ export const useProfileEditor = ({ role, clubId }) => {
       setFormState(formattedData);
       setInitialState(formattedData);
       setProfileData(dataFromServer);
-      setLogoPreview(logoPath ? `${STORAGE_URL}/${dataFromServer.logo_path}` : '/logoeks.png')
+      setLogoPreview(logoPath ? `${STORAGE_URL}/${dataFromServer.logo_path}` : null)
     } catch (error) {
       Swal.fire('Error', `Gagal memuat profil ${role}.`, 'error');
     } finally {
@@ -128,7 +128,7 @@ export const useProfileEditor = ({ role, clubId }) => {
   const handleCancelLogoChange = () => {
     setLogoFile(null)
     const originalLogoPath = initialState?.logoPath
-    setLogoPreview(originalLogoPath ? `${STORAGE_URL}/${originalLogoPath}` : '/logoeks.png');
+    setLogoPreview(originalLogoPath ? `${STORAGE_URL}/${originalLogoPath}` : null);
   }
 
   const handleSubmitProfile = async () => {

@@ -40,15 +40,17 @@ export default function ClubDetail() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-8 flex items-center gap-4">
-                <img
-                  src={
-                    club?.logo_path
-                      ? `${STORAGE_URL}/${club.logo_path}`
-                      : '/logoeks.png'
-                  }
-                  alt="LOGO EKSKUL"
-                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border-4 border-white shadow-md"
-                />
+                {club?.logo_path ? (
+                  <img
+                    src={`${STORAGE_URL}/${club.logo_path}`}
+                    alt="LOGO EKSKUL"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border-4 border-white shadow-md"
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white shadow-md flex items-center justify-center bg-gray-100">
+                    <Users size={40} className="text-gray-400" />
+                  </div>
+                )}
                 <div>
                   <h1 className="text-2xl font-bold">
                     Administrasi, <span>{club ? club.name : 'Memuat...'}</span>

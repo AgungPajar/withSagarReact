@@ -4,7 +4,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Paper, Typography, Button, TextField, Box, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Edit } from 'lucide-react'; // Import icon baru
+import { ArrowLeft, Edit, Users } from 'lucide-react'; // Import icon baru
 
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useProfileEditor } from '@/hooks/Clubs/useProfileEditor';
@@ -65,10 +65,12 @@ export default function EditProfilePage() {
           <Box className="flex flex-col items-center mb-6">
             <Box className="relative">
               <Avatar
-                src={logoPreview || '/logoeks.png'}
+                src={logoPreview || undefined}
                 alt={formState?.name}
                 sx={{ width: 100, height: 100, border: '4px solid #f0f0f0' }}
-              />
+              >
+                {!logoPreview && <Users size={40} className="text-gray-400" />}
+              </Avatar>
               <label
                 htmlFor="logo-upload"
                 className="absolute -bottom-2 -right-2 bg-gray-200 rounded-full p-1.5 cursor-pointer hover:bg-gray-300 transition-colors"
