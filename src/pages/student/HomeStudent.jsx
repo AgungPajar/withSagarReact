@@ -26,38 +26,77 @@ export default function HomeStudent() {
     return club.name?.toLowerCase().includes('osis');
   };
 
-  const handleDaftarEkskul = async (clubHashId) => {
-    try {
-      const res = await apiClient.post(`/clubs/${clubHashId}/request-join`);
-      Swal.fire({
-        title: 'Sukses!',
-        text: res.data.message,
-        icon: 'success',
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'border-4 border-black bg-lime-400 text-black font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
-          popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
-        },
-        buttonsStyling: false,
-      });
+  const handleDaftarEkskul = async (club) => {
+    Swal.fire({
+      title: 'Konfirmasi Pendaftaran',
+      text: `Apakah kamu yakin ingin mendaftar ekstrakurikuler ini?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Daftar!',
+      cancelButtonText: 'Batal',
+      customClass: {
+        confirmButton: 'border-4 border-black bg-lime-400 text-black font-black px-6 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+        cancelButton: 'border-4 border-black bg-white text-black font-black px-6 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+        popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+      },
+      buttonsStyling: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Memproses...',
+          text: 'Mohon tunggu sebentar',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+          },
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
-      const studentRes = await apiClient.get(`/student/${studentHashId}/dashboard`);
-      setStudent(studentRes.data.student);
-      setClubs(studentRes.data.clubs);
-    } catch (err) {
-      console.error('Error daftar ekskul:', err.response?.data || err);
-      Swal.fire({
-        title: 'Gagal!',
-        text: err.response?.data?.message || 'Terjadi kesalahan',
-        icon: 'error',
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'border-4 border-black bg-red-500 text-white font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
-          popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
-        },
-        buttonsStyling: false,
-      });
-    }
+        try {
+          const res = await apiClient.post(`/clubs/${club.hash_id}/request-join`);
+          const studentRes = await apiClient.get(`/student/${studentHashId}/dashboard`);
+          setStudent(studentRes.data.student);
+          setClubs(studentRes.data.clubs);
+          
+          const waLink = club.group_link?.startsWith('http') ? club.group_link : `https://${club.group_link}`;
+
+          Swal.fire({
+            title: 'Sukses!',
+            text: res.data.message,
+            icon: 'success',
+            showDenyButton: true,
+            confirmButtonText: 'OK',
+            denyButtonText: 'GRUP WA',
+            customClass: {
+              confirmButton: 'border-4 border-black bg-lime-400 text-black font-black px-6 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+              denyButton: 'border-4 border-black bg-emerald-400 text-black font-black px-6 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+              popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+            },
+            buttonsStyling: false,
+          }).then((alertResult) => {
+            if (alertResult.isDenied && club.group_link) {
+              window.open(waLink, '_blank');
+            }
+          });
+        } catch (err) {
+          console.error('Error daftar ekskul:', err.response?.data || err);
+          Swal.fire({
+            title: 'Gagal!',
+            text: err.response?.data?.message || 'Terjadi kesalahan',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'border-4 border-black bg-red-500 text-white font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+              popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+            },
+            buttonsStyling: false,
+          });
+        }
+      }
+    });
   };
 
   const handleLogout = async () => {
@@ -310,7 +349,7 @@ export default function HomeStudent() {
                   ) : (
                     <button
                       className="w-full bg-blue-500 border-4 border-black text-white font-black py-3 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
-                      onClick={() => handleDaftarEkskul(club.hash_id)}
+                      onClick={() => handleDaftarEkskul(club)}
                     >
                       DAFTAR GAS!
                     </button>
