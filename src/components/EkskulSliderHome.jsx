@@ -86,7 +86,7 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
             <SwiperSlide key={club.hash_id} className="flex justify-center px-14 sm:px-0">
               {({ isActive }) => (
                 <motion.div
-                  onClick={() => handleCardClick(club)}
+                  onClickCapture={() => handleCardClick(club)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{
                     opacity: 1,
