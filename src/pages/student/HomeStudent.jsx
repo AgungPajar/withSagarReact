@@ -223,7 +223,7 @@ export default function HomeStudent() {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden absolute right-6 top-20 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-40 flex flex-col p-4 gap-4">
+        <div className="md:hidden fixed right-6 top-20 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-40 flex flex-col p-4 gap-4">
           <button 
             onClick={() => { setIsMenuOpen(false); navigate(`/student/profile/edit/${studentId}`); }}
             className="bg-yellow-300 border-4 border-black px-4 py-2 font-bold uppercase w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all text-left"
