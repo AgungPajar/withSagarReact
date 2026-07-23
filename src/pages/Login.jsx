@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  TextField,
-  InputAdornment,
-  IconButton
-} from '@mui/material';
-import apiClient, { getCsrfToken } from '../utils/axiosConfig';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import apiClient from '../utils/axiosConfig';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -21,9 +15,6 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Get CSRF cookie first
-      await getCsrfToken();
-
       const res = await apiClient.post('/login', {
         username,
         password,
@@ -31,11 +22,8 @@ export default function Login() {
 
       // Simpan token ke localStorage
       localStorage.setItem('access_token', res.data.access_token);
-
-      // Simpan data user ke localStorage
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
-      // Redirect sesuai role
       // Redirect sesuai role
       if (res.data.user.role === 'osis') {
         navigate('/admin/dashboard');
@@ -52,7 +40,6 @@ export default function Login() {
     } catch (err) {
       console.error(err); // Lihat error lengkap di console
 
-      // Cek apakah error dari API
       if (err.response?.status === 401 || err.response?.data?.message === 'Invalid credentials') {
         setError('Username atau password salah');
       } else {
@@ -64,75 +51,66 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-cyan-200 via-sky-300 to-indigo-300 ">
-      <div className="bg-blue-200 bg-opacity-70 p-6 px-8 rounded-lg shadow-md w-full max-w-sm mx-auto">
-        <img src="/smealogo.png" alt="Logo" className="w-24 h-24 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-center mb-6">Login to Continue</h2>
+    <div className="min-h-screen bg-[#FFF4E0] flex flex-col items-center justify-center font-mono text-black selection:bg-pink-400 p-4">
+      <div className="bg-cyan-300 border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] w-full max-w-md relative">
+        {/* Header Ribbon */}
+        <div className="absolute -top-6 -right-6 bg-yellow-300 border-4 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rotate-3">
+          <h1 className="font-black text-2xl uppercase tracking-widest">LOGIN</h1>
+        </div>
 
-        {/* Form Login */}
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <TextField
-              label="Username"
-              fullWidth
+        <img src="/smealogo.png" alt="Logo" className="w-24 h-24 mx-auto mb-6 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 rounded-full" />
+        
+        <h2 className="text-2xl font-black text-center mb-8 bg-white border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-1">
+          MASUK KE SISTEM
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="flex flex-col space-y-2">
+            <label className="font-bold text-black uppercase">Username</label>
+            <input 
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              className="w-full border-4 border-black p-3 bg-white font-bold outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-none focus:translate-x-[4px] focus:translate-y-[4px] transition-all"
             />
           </div>
-          <div className="mb-4">
-            <TextField
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-          </div>
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
-                Loading...
-              </>
-            ) : (
-              'LOGIN'
-            )}
-          </button>
 
+          <div className="flex flex-col space-y-2 relative">
+            <label className="font-bold text-black uppercase">Password</label>
+            <div className="relative">
+              <input 
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full border-4 border-black p-3 bg-white font-bold outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-none focus:translate-x-[4px] focus:translate-y-[4px] transition-all pr-16"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 border-2 border-black bg-pink-400 text-black px-2 py-1 font-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+              >
+                {showPassword ? 'HIDE' : 'SHOW'}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-500 border-4 border-black text-white font-bold p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-bounce">
+              {error}
+            </div>
+          )}
+
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full bg-lime-400 text-black border-4 border-black py-4 px-6 font-black text-xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:bg-lime-500 hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px] transition-all flex items-center justify-center gap-3 ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
+            >
+              {isLoading ? 'LOADING...' : 'GAS LOGIN!'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

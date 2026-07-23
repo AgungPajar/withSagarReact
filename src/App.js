@@ -10,6 +10,7 @@ import SuksesLomba from './pages/public/SuksesLomba';
 import DataAgustusan from './pages/public/DataAgustusan';
 import TTSForm from './pages/public/TTSForm';
 import NewsDetail from './components/Public/News/NewsDetail';
+import DaftarKetua from './pages/public/DaftarKetua';
 
 // Ekstrakurikuller
 import ClubDetail from './pages/club/ClubDetail';
@@ -66,6 +67,7 @@ function App() {
         <Route path="/sukses" element={<SuksesLomba />} />
         <Route path="/ttsform" element={<TTSForm />} />
         <Route path="/news/:slug" element={<NewsDetail />} />
+        <Route path="/daftar-ketua" element={<DaftarKetua />} />
       </Routes>
 
       <Routes> {/* Club Routes */}

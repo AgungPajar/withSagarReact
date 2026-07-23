@@ -59,14 +59,6 @@ const EditProfileStudent = () => {
     }));
   };
 
-  const getCsrfToken = async () => {
-    try {
-      await apiClient.get('/sanctum/csrf-cookie', { withCredentials: true });
-    } catch (err) {
-      console.error('Gagal ambil CSRF Token:', err);
-    }
-  };
-
   const handleChangePassword = () => {
     Swal.fire({
       title: 'Ubah Password',
@@ -113,7 +105,6 @@ const EditProfileStudent = () => {
       if (result.isConfirmed) {
         try {
           Swal.showLoading();
-          await getCsrfToken();
 
           const token = localStorage.getItem('access_token');
           const xsrfToken = document.cookie

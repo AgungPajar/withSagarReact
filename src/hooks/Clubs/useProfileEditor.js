@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import apiClient, { STORAGE_URL, getCsrfToken } from '@/utils/axiosConfig'
+import apiClient, { STORAGE_URL } from '@/utils/axiosConfig'
 import Swal from 'sweetalert2'
 
 export const useProfileEditor = ({ role, clubId }) => {
@@ -210,7 +210,6 @@ export const useProfileEditor = ({ role, clubId }) => {
       if (result.isConfirmed) {
         try {
           Swal.showLoading();
-          await getCsrfToken();
 
           const token = localStorage.getItem('access_token');
           const xsrfToken = document.cookie

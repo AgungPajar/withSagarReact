@@ -1,24 +1,18 @@
 
 import axios from 'axios';
 
-export const API_BASE_URL = 'https://coba.smknegeri1garut.sch.id'; 
-// export const API_BASE_URL = 'http://withsagarapi74.test'; 
+export const API_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL.replace(/\/api$/, '') 
+  : 'http://localhost:8000';
 export const STORAGE_URL = `${API_BASE_URL}/storage`;
 
 const apiClient = axios.create({
   baseURL: `${API_BASE_URL}/api`,
-  withCredentials: true,
   headers: {
     'Accept': 'application/json',
     // 'Content-Type': 'application/json'
   }
 });
-
-export const getCsrfToken = () => {
-  return axios.get(`${API_BASE_URL}/sanctum/csrf-cookie`, {
-    withCredentials: true
-  });
-};
 
 apiClient.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('access_token');
@@ -26,15 +20,6 @@ apiClient.interceptors.request.use(async (config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   
-  const xsrfToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('XSRF-TOKEN='))
-    ?.split('=')[1];
-
-  if (xsrfToken) {
-    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
-  }
-
   return config;
 }, (error) => {
   return Promise.reject(error);

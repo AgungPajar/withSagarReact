@@ -2,24 +2,17 @@ import React, { useEffect, useState } from 'react';
 import apiClient, { STORAGE_URL } from '../../utils/axiosConfig';
 import { handleUnauthorizedError } from '../../utils/errorHandler';
 import Swal from 'sweetalert2';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Menu, MenuItem, IconButton, Avatar } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { FaCheckCircle, FaWhatsapp, FaClock } from 'react-icons/fa';
+import { FaCheckCircle, FaWhatsapp, FaBars, FaTimes } from 'react-icons/fa';
 import { Typewriter } from 'react-simple-typewriter';
-import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Footer from '@/components/layouts/Footer';
-
 
 export default function HomeStudent() {
   const [student, setStudent] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { studentId } = useParams();
   const navigate = useNavigate();
 
@@ -27,9 +20,8 @@ export default function HomeStudent() {
   const studentHashId = user?.student_hash_id;
 
   const isEkskulOsis = (club) => {
-    return club.name?.toLowerCase().includes('osis'); // atau bisa pakai ID tertentu
+    return club.name?.toLowerCase().includes('osis');
   };
-
 
   const handleDaftarEkskul = async (clubHashId) => {
     try {
@@ -40,14 +32,12 @@ export default function HomeStudent() {
         icon: 'success',
         confirmButtonText: 'OK',
         customClass: {
-          confirmButton:
-            'border border-blue-600 text-blue-600 font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition',
+          confirmButton: 'border-4 border-black bg-lime-400 text-black font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+          popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
         },
         buttonsStyling: false,
       });
 
-
-      // Refresh data biar tombol berubah otomatis
       const studentRes = await apiClient.get(`/student/${studentHashId}/dashboard`);
       setStudent(studentRes.data.student);
       setClubs(studentRes.data.clubs);
@@ -58,18 +48,13 @@ export default function HomeStudent() {
         text: err.response?.data?.message || 'Terjadi kesalahan',
         icon: 'error',
         confirmButtonText: 'OK',
-        confirmButtonColor: '#2563EB'
+        customClass: {
+          confirmButton: 'border-4 border-black bg-red-500 text-white font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+          popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+        },
+        buttonsStyling: false,
       });
     }
-  };
-
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -79,24 +64,24 @@ export default function HomeStudent() {
       icon: 'question',
       showCancelButton: true,
       showDenyButton: true,
-      confirmButtonText: 'Logout',
+      confirmButtonText: 'Logout Biasa',
       denyButtonText: 'Logout All Devices',
       cancelButtonText: 'Batal',
       customClass: {
-        confirmButton: 'my-confirm-btn',
-        denyButton: 'my-deny-btn',
-        cancelButton: 'my-cancel-btn'
-      }
+        confirmButton: 'border-4 border-black bg-pink-400 text-black font-black px-4 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all',
+        denyButton: 'border-4 border-black bg-orange-400 text-black font-black px-4 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all',
+        cancelButton: 'border-4 border-black bg-white text-black font-black px-4 py-2 m-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all',
+        popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+      },
+      buttonsStyling: false,
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          // Logout device ini aja
           await apiClient.post('/logout');
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');
           navigate('/');
         } else if (result.isDenied) {
-          // Logout semua device
           await apiClient.post('/logout?mode=all');
           localStorage.removeItem('access_token');
           localStorage.removeItem('user');
@@ -126,10 +111,9 @@ export default function HomeStudent() {
             allowOutsideClick: false,
             allowEscapeKey: false,
             confirmButtonText: 'Lengkapi Profile',
-            confirmButtonColor: '#3B82F6',
             customClass: {
-              confirmButton:
-                'border-2 border-blue-500 text-blue-500 rounded-lg px-5 py-2 font-semibold transition duration-200 hover:bg-blue-200 hover:text-white hover:border-blue-200',
+              confirmButton: 'border-4 border-black bg-cyan-300 text-black font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+              popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
             },
             buttonsStyling: false,
           }).then((result) => {
@@ -139,7 +123,6 @@ export default function HomeStudent() {
           });
         }
 
-        // lanjut fetch dashboard data untuk ekskul
         const dashboardRes = await apiClient.get(`/student/${studentHashId}/dashboard`);
         setStudent(dashboardRes.data.student);
         setClubs(dashboardRes.data.clubs);
@@ -155,159 +138,182 @@ export default function HomeStudent() {
     };
 
     fetchData();
-  }, []);
-
+  }, [navigate, studentId]);
 
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar Top */}
-      <header className="w-full bg-white shadow-sm px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div className="min-h-screen bg-[#FFF4E0] font-mono text-black selection:bg-pink-400">
+      
+      {/* Navbar Neobrutalism */}
+      <header className="w-full bg-cyan-300 border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <img src="/smealogo.png" alt="Logo" className="w-10 h-10" />
-          <h1 className="text-xl font-bold text-blue-700">E - OSSAGAR</h1>
+          <img src="/smealogo.png" alt="Logo" className="w-12 h-12 bg-white border-4 border-black p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+          <h1 className="text-2xl font-black tracking-tighter uppercase bg-white px-2 py-1 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-1">E-OSSAGAR</h1>
         </div>
 
-        <div>
-          <IconButton onClick={handleMenuOpen}>
-            <MenuIcon />
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-            <MenuItem onClick={() => { handleMenuClose(); window.location.href = `/student/profile/edit/${studentId}`; }}>
-              <EditIcon fontSize="small" className="mr-2" /> Edit Profile
-            </MenuItem>
-            <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>
-              <LogoutIcon fontSize="small" className="mr-2" /> Logout
-            </MenuItem>
-          </Menu>
+        {/* Desktop Menu */}
+        <div className="hidden md:flex gap-4">
+          <button 
+            onClick={() => navigate(`/student/profile/edit/${studentId}`)}
+            className="bg-yellow-300 border-4 border-black px-4 py-2 font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
+          >
+            Edit Profile
+          </button>
+          <button 
+            onClick={handleLogout}
+            className="bg-pink-400 border-4 border-black px-4 py-2 font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="md:hidden">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="bg-white border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+          >
+            {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
         </div>
       </header>
 
-      {/* Content */}
-      <main className="px-6 py-6 pb-32">
-        <motion.h2
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="relative inline-block text-2xl font-semibold mb-4 text-gray-800 text-center w-full"
-        >
-          <motion.span
-            initial={{ backgroundSize: '0% 100%' }}
-            animate={{ backgroundSize: '100% 100%' }}
-            transition={{ delay: 2, duration: 0.8, ease: 'easeInOut' }}
-            className="relative z-10 inline-block px-1 bg-gradient-to-r from-blue-200 to-blue-100 bg-no-repeat bg-[length:100%_40%] bg-bottom"
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute right-6 top-20 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-40 flex flex-col p-4 gap-4">
+          <button 
+            onClick={() => { setIsMenuOpen(false); navigate(`/student/profile/edit/${studentId}`); }}
+            className="bg-yellow-300 border-4 border-black px-4 py-2 font-bold uppercase w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all text-left"
           >
-            <Typewriter
-              words={[`Halo, ${student?.name || 'Siswa'} 👋`]}
-              loop={1}
-              cursor
-              cursorStyle="|"
-              typeSpeed={70}
-              deleteSpeed={50}
-              delaySpeed={1500}
-            />
-          </motion.span>
-        </motion.h2>
-
-
-        <h3 className="text-lg text-gray-600 mb-6">Silakan pilih ekstrakurikuler yang kamu minati:</h3>
-
-        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {clubs.map((club) => (
-            <div key={club.hash_id} className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition duration-300">
-              <img
-                src={`${STORAGE_URL}/${club.logo_path}` || '/logoeks.png'}
-                alt={club.name}
-                className="w-full h-32 object-contain mb-4 rounded"
-              />
-              <h3 className="text-md font-bold mb-1 line-clamp-1">{club.name}</h3>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{club.description || 'Belum ada deskripsi'}</p>
-              {isEkskulOsis(club) ? (
-                <button
-                  disabled
-                  className="w-full bg-gray-400 text-white py-2 rounded cursor-not-allowed"
-                  title="Ekskul OSIS tidak membuka pendaftaran"
-                >
-                  Tidak Bisa Daftar
-                </button>
-              ) : club.status === 'accepted' ? (
-                <button
-                  className="w-full border border-gray-400 text-gray-600 hover:bg-blue-100 py-2 rounded mb-2 flex items-center justify-center gap-2"
-                  onClick={() =>
-                      Swal.fire({
-                        title: 'SELAMAT!!!',
-                        text: 'kamuu sudah diterima di ekskul ini yeyy , semangatttt',
-                        icon: 'success',
-                        confirmButtonText: 'OKE',
-                        customClass: {
-                          confirmButton:
-                            'border border-green-600 text-green-600 font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition',
-                        },
-                        buttonsStyling: false,
-                      })
-                    }
-                >
-                  <FaCheckCircle /> Coba Check
-                </button>
-              ) : club.status === 'pending' ? (
-                <>
-                  <a
-                    href={
-                      club.group_link?.startsWith('http')
-                        ? club.group_link
-                        : `https://${club.group_link}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full border border-green-500 text-green-600  py-2 rounded flex items-center justify-center gap-2 hover:bg-green-50 transition"
-                  >
-                    <FaWhatsapp /> Grup WA
-                  </a>
-                </>
-              ) : club.status === 'rejected' ? (
-                <>
-                  <button
-                    className="w-full border border-gray-400 text-gray-600 py-2 rounded mb-2 hover:bg-gray-100 flex items-center justify-center gap-2"
-                    onClick={() =>
-                      Swal.fire({
-                        icon: 'error',
-                        title: 'Ditolak',
-                        text: 'Maaf kamuu belum diterimaa di ekskul inii :( jangann patahh semangatt yaa',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                          icon: 'border-red-600',
-                          confirmButton:
-                            'border border-red-600 text-red-600 font-semibold px-5 py-2 rounded-lg hover:bg-red-600 hover:text-white transition',
-                        },
-                        buttonsStyling: false,
-                      })
-                    }
-                  >
-                    <FaCheckCircle /> Coba Check
-                  </button>
-                  {/* <button
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-                    onClick={() => handleDaftarEkskul(club.hash_id)}
-                  >
-                    Daftar Kembali
-                  </button> */}
-                </>
-              ) : (
-                <button
-                  className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-                  onClick={() => handleDaftarEkskul(club.hash_id)}
-                >
-                  Daftar
-                </button>
-              )}
-
-
-            </div>
-          ))}
+            Edit Profile
+          </button>
+          <button 
+            onClick={() => { setIsMenuOpen(false); handleLogout(); }}
+            className="bg-pink-400 border-4 border-black px-4 py-2 font-bold uppercase w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all text-left"
+          >
+            Logout
+          </button>
         </div>
-      </main >
-      <Footer />
-    </div >
+      )}
+
+      {/* Content */}
+      <main className="px-6 py-10 pb-32 max-w-7xl mx-auto">
+        <div className="mb-12 text-center">
+          <div className="inline-block bg-lime-400 border-4 border-black px-6 py-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-1">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight">
+              <Typewriter
+                words={[`HALO, ${student?.name?.toUpperCase() || 'SISWA'} 👋`]}
+                loop={1}
+                cursor
+                cursorStyle="_"
+                typeSpeed={70}
+              />
+            </h2>
+          </div>
+          <p className="mt-6 font-bold text-lg bg-white border-2 border-black inline-block px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-1">
+            Silakan pilih ekstrakurikuler yang kamu minati!
+          </p>
+        </div>
+
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {clubs.map((club) => {
+            const isOsis = isEkskulOsis(club);
+            
+            // Tentukan warna card bergantian biar rame
+            const cardColors = ['bg-fuchsia-300', 'bg-cyan-300', 'bg-yellow-300', 'bg-orange-300', 'bg-lime-300'];
+            const randomColor = cardColors[club.id % cardColors.length] || 'bg-white';
+
+            return (
+              <div key={club.hash_id} className={`${randomColor} border-4 border-black p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 transition-transform duration-200 flex flex-col h-full`}>
+                
+                <div className="bg-white border-4 border-black p-2 mb-4 h-40 flex items-center justify-center shadow-inner">
+                  <img
+                    src={`${STORAGE_URL}/${club.logo_path}` || '/logoeks.png'}
+                    alt={club.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                
+                <h3 className="text-xl font-black uppercase mb-2 line-clamp-1 border-b-4 border-black pb-1">{club.name}</h3>
+                <p className="font-semibold text-sm mb-6 line-clamp-3 flex-grow">{club.description || 'Belum ada deskripsi.'}</p>
+                
+                <div className="mt-auto">
+                  {isOsis ? (
+                    <div className="w-full bg-gray-400 border-4 border-black text-black font-black py-3 text-center uppercase cursor-not-allowed">
+                      DITUTUP
+                    </div>
+                  ) : club.status === 'accepted' ? (
+                    <button
+                      className="w-full bg-green-400 border-4 border-black text-black font-black py-3 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+                      onClick={() =>
+                          Swal.fire({
+                            title: 'SELAMAT!!!',
+                            text: 'kamuu sudah diterima di ekskul ini yeyy, semangatttt!',
+                            icon: 'success',
+                            confirmButtonText: 'OKE',
+                            customClass: {
+                              confirmButton: 'border-4 border-black bg-lime-400 text-black font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+                              popup: 'border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+                            },
+                            buttonsStyling: false,
+                          })
+                        }
+                    >
+                      <FaCheckCircle /> DITERIMA
+                    </button>
+                  ) : club.status === 'pending' ? (
+                    <a
+                      href={
+                        club.group_link?.startsWith('http')
+                          ? club.group_link
+                          : `https://${club.group_link}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-emerald-400 border-4 border-black text-black font-black py-3 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+                    >
+                      <FaWhatsapp className="text-xl" /> GRUP WA
+                    </a>
+                  ) : club.status === 'rejected' ? (
+                    <button
+                      className="w-full bg-red-500 border-4 border-black text-white font-black py-3 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+                      onClick={() =>
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Ditolak',
+                          text: 'Maaf kamuu belum diterima di ekskul ini :( jangan patah semangat yaa',
+                          confirmButtonText: 'OK',
+                          customClass: {
+                            confirmButton: 'border-4 border-black bg-white text-black font-black px-6 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all',
+                            popup: 'border-4 border-black bg-red-400 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none'
+                          },
+                          buttonsStyling: false,
+                        })
+                      }
+                    >
+                      <FaCheckCircle /> DITOLAK
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full bg-blue-500 border-4 border-black text-white font-black py-3 uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
+                      onClick={() => handleDaftarEkskul(club.hash_id)}
+                    >
+                      DAFTAR GAS!
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </main>
+      
+      {/* Neobrutalism Footer Styling could be done in Footer component itself, 
+          but for now we leave it or wrap it if necessary */}
+      <div className="border-t-4 border-black">
+        <Footer />
+      </div>
+    </div>
   );
 }
