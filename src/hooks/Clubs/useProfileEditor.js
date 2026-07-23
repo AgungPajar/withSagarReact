@@ -88,7 +88,7 @@ export const useProfileEditor = ({ role, clubId }) => {
   const handleSaveLogo = async () => {
     if (!logoFile) return;
     setSubmitting(true);
-    const endpoint = role === 'osis' ? '/admin/profile' : `/clubs/${clubId}`;
+    const endpoint = role === 'osis' ? '/admin/profile' : `/profile/update`;
     try {
       const formData = new FormData();
       formData.append('logo', logoFile);
@@ -115,7 +115,7 @@ export const useProfileEditor = ({ role, clubId }) => {
 
   const handleSubmitProfile = async () => {
     setSubmitting(true)
-    const endpoint = role === 'osis' ? '/admin/profile' : `/clubs/${clubId}`
+    const endpoint = role === 'osis' ? '/admin/profile' : `/profile/update`
 
     try {
       const formData = new FormData();
