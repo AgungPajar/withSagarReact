@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import apiClient from '../../utils/axiosConfig';
 
 // Custom Searchable Dropdown with Neobrutalism Style
-const NeobrutalSelect = ({ options, value, onChange, name, placeholder, isObject, allowCreate }) => {
+const NeobrutalSelect = ({ options, value, onChange, name, placeholder, isObject, allowCreate, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const wrapperRef = useRef(null);
@@ -58,14 +58,20 @@ const NeobrutalSelect = ({ options, value, onChange, name, placeholder, isObject
   return (
     <div className="relative w-full" ref={wrapperRef}>
       <div 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full border-4 border-black p-3 bg-white font-bold outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all cursor-pointer flex justify-between items-center"
+        onClick={() => {
+          if (!disabled) setIsOpen(!isOpen);
+        }}
+        className={`w-full border-4 border-black p-3 font-bold outline-none flex justify-between items-center transition-all ${
+          disabled 
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' 
+            : 'bg-white cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]'
+        }`}
       >
         <span className="truncate">{displayValue()}</span>
         <span className="ml-2 font-black">▼</span>
       </div>
 
-      {isOpen && (
+      {isOpen && !disabled && (
         <div className="absolute z-50 w-full mt-2 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="p-2 border-b-4 border-black bg-gray-100">
             <input 
@@ -141,8 +147,30 @@ export default function DaftarKetua() {
   });
 
   const dummyTingkatan = ['X', 'XI', 'XII'];
-  // Karena user bisa create kelas baru yang belum ada, kita kasih opsi default aja buat memudahkan.
-  const dummyKelas = ['1', '2', '3', '4', '5', '6']; 
+
+  // 1. Dapatkan singkatan jurusan jika sudah milih jurusan
+  let singkatanJurusan = '';
+  if (formData.jurusan && jurusans.length > 0) {
+    const selectedJurusan = jurusans.find(j => j.id === formData.jurusan || j.hash_id === formData.jurusan);
+    if (selectedJurusan) {
+      singkatanJurusan = selectedJurusan.singkatan || selectedJurusan.nama;
+    } else {
+      // kalau input manual hasil creatable
+      singkatanJurusan = formData.jurusan;
+    }
+  }
+
+  // 2. Generate opsi kelas secara dinamis
+  let opsiKelasDinamis = [];
+  if (formData.tingkatan && singkatanJurusan) {
+    opsiKelasDinamis = [
+      `${formData.tingkatan} ${singkatanJurusan} 1`,
+      `${formData.tingkatan} ${singkatanJurusan} 2`,
+      `${formData.tingkatan} ${singkatanJurusan} 3`,
+    ];
+  } else {
+    opsiKelasDinamis = ['1', '2', '3', '4', '5', '6'];
+  }
 
   useEffect(() => {
     // Ambil ekskul dan jurusan dari backend
@@ -166,9 +194,21 @@ export default function DaftarKetua() {
     fetchData();
   }, []);
 
+  // Kalau tingkatan ganti, reset jurusan dan kelas
+  // Kalau jurusan ganti, reset kelas
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: value };
+      if (name === 'tingkatan') {
+        newData.jurusan = '';
+        newData.kelas = '';
+      }
+      if (name === 'jurusan') {
+        newData.kelas = '';
+      }
+      return newData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -321,22 +361,27 @@ export default function DaftarKetua() {
                   value={formData.jurusan}
                   onChange={handleChange}
                   name="jurusan"
-                  placeholder={jurusans.length === 0 ? "Loading Jurusan..." : "-- Pilih Jurusan --"}
+                  placeholder={
+                    !formData.tingkatan ? "Pilih Tingkatan Dulu" : 
+                    jurusans.length === 0 ? "Loading Jurusan..." : "-- Pilih Jurusan --"
+                  }
                   isObject={typeof jurusans[0] === 'object'} 
-                  allowCreate={true} // Boleh bikin jurusan baru kalau misal gak ada
+                  allowCreate={true}
+                  disabled={!formData.tingkatan}
                 />
               </div>
 
               <div className="flex flex-col space-y-2">
                 <label className="font-bold text-black uppercase">Kelas / Rombel</label>
                 <NeobrutalSelect 
-                  options={dummyKelas}
+                  options={opsiKelasDinamis}
                   value={formData.kelas}
                   onChange={handleChange}
                   name="kelas"
-                  placeholder="Ketik Kelas Baru / Pilih"
+                  placeholder={!formData.jurusan ? "Pilih Jurusan Dulu" : "Ketik Kelas Baru / Pilih"}
                   isObject={false}
-                  allowCreate={true} // FITUR CREATE KELAS BARU
+                  allowCreate={true}
+                  disabled={!formData.jurusan}
                 />
               </div>
             </div>
