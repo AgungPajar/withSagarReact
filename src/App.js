@@ -67,7 +67,7 @@ function App() {
         <Route path="/sukses" element={<SuksesLomba />} />
         <Route path="/ttsform" element={<TTSForm />} />
         <Route path="/news/:slug" element={<NewsDetail />} />
-        <Route path="/daftar-ketua" element={<DaftarKetua />} />
+        <Route path="/regis-ketua" element={<DaftarKetua />} />
       </Routes>
 
       <Routes> {/* Club Routes */}
