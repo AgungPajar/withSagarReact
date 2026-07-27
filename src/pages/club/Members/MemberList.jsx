@@ -8,7 +8,8 @@ import {
   TableBody,
   Button,
   Typography,
-  Paper
+  Paper,
+  Badge
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useMembers } from '@/hooks/Clubs/useMembers';
@@ -32,6 +33,7 @@ export default function MemberList() {
     handleSeleksi,
     handleDeleteMember,
     handleAddStudent,
+    pendingRequests,
   } = useMembers(clubId);
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -64,7 +66,9 @@ export default function MemberList() {
               />
               <div className='flex flex-col sm:flex-row gap-3'>
               <Button variant="contained" onClick={() => setOpenAddDialog(true)} className="w-full sm:w-auto">+ Tambah Anggota</Button>
-              <Button variant="contained" color="secondary" onClick={handleSeleksi} className="w-full sm:w-auto">Seleksi Pendaftar</Button>
+              <Badge badgeContent={pendingRequests?.length || 0} color="error">
+                <Button variant="contained" color="secondary" onClick={handleSeleksi} className="w-full sm:w-auto">Seleksi Pendaftar</Button>
+              </Badge>
               </div>
             </div>
 

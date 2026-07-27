@@ -337,5 +337,6 @@ export const useMembers = (clubId) => {
     handleSeleksi,
     handleDeleteMember,
     handleAddStudent,
+    pendingRequests,
   };
 }
