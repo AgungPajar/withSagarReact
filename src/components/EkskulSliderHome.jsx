@@ -164,7 +164,7 @@ const EkskulSlider = React.forwardRef(({ onLoadFinish }, ref) => {
                       <li key={schedule.id} className="flex justify-between items-center text-sm bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                         <span className="font-bold text-gray-700 uppercase tracking-wider text-xs bg-gray-100 px-2 py-1 rounded">{schedule.day_of_week}</span>
                         <span className="font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                          {schedule.start_time.substring(0,5)} - {schedule.end_time.substring(0,5)}
+                          {schedule.start_time?.substring(0,5) || '-'} - {schedule.end_time?.substring(0,5) || '-'}
                         </span>
                       </li>
                     ))}
